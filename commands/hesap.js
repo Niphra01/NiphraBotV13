@@ -1,10 +1,10 @@
 const math = require("math-expression-evaluator");
-const Discord = require("discord.js");
+const discord = require("discord.js");
 
 module.exports = {
     name: "hesap",
     description: "Hesap yapar",
-    async execute(client, message, args, tools) {
+    async execute(client, message, args) {
 
         if (!args[0]) return message.channel.send("Bir değer giriniz!");
         let resp;
@@ -13,7 +13,7 @@ module.exports = {
         } catch (e) {
             return message.channel.send("Geçerli bir değer giriniz!");
         }
-        const embed = new Discord.RichEmbed()
+        const embed = new discord.MessageEmbed()
             .setColor(0xffffff)
             .setTitle("Matematik hesaplaması")
             .addField("Girdi", `\`\`\`js\n${args.join('')}\`\`\``)
