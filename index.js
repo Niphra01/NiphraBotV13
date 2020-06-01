@@ -10,7 +10,7 @@ const PREFIX = process.env.PREFIX;
 //CLIENT EVENTS
 client.on("ready", () => {
   console.log('Bot hazır')
-  client.user.setActivity("Sadece")
+  client.user.setActivity("n! - Gavat Sofu ile")
   const armutSporGuild = client.guilds.cache.get('249951409070407681')
   const memberCount = armutSporGuild.memberCount
   const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
@@ -59,24 +59,28 @@ client.on("guildMemberRemove", member => {
   memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
 });
 client.on('messageDelete', message => {
-  if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()) return
-
-  if (!message.partials) {
-    const channel = client.channels.cache.get('712110998286499930')
+  try {
+    if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()) return
     try {
-      if (channel) {
-        const embed = new MessageEmbed()
-          .setTitle('Silinen Mesaj')
-          .addField('Mesajı yazan', `${message.author.tag}`)
-          .addField('Silindiği Kanal', `${message.channel.name}`)
-          .setDescription(message.content)
-          .setTimestamp()
+      if (!message.partials) {
+        const channel = client.channels.cache.get('712110998286499930')
 
-        channel.send(embed)
+        if (channel) {
+          const embed = new MessageEmbed()
+            .setTitle('Silinen Mesaj')
+            .addField('Mesajı yazan', `${message.author.tag}`)
+            .addField('Silindiği Kanal', `${message.channel.name}`)
+            .setDescription(message.content)
+            .setTimestamp()
+
+          channel.send(embed)
+        }
       }
     } catch (err) {
       console.log('Eski bir mesaj silindi.')
     }
+  } catch (err) {
+    console.log('Eski bir mesaj silindi.')
   }
 })
 
@@ -102,12 +106,6 @@ client.on("message", message => {
     }
 
   }
-  if (message.content == "ip" || message.content == "ip ne" || message.content == "sunucu ip ne" || message.content == "!ip") {
-    const ipEmbed = new discord.MessageEmbed()
-      .setTitle("IP:   95.173.166.75")
-    message.channel.send(ipEmbed);
-  }
-
 });
 
 
