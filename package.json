@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "Niphra",
   "license": "ISC",
@@ -12,6 +13,8 @@
     "@discordjs/opus": "^0.3.2",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-glitch-keepalive": "^0.2.0",
     "fs": "0.0.1-security",
     "genius-lyrics": "^2.0.1",
     "math-expression-evaluator": "^1.2.22",
