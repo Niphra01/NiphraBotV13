@@ -6,8 +6,8 @@ module.exports = {
 
     
     if(!song) {
-		      message.guild.me.voice.channel.leave();
-		      message.client.queue.delete(message.guild.id);
+          message.guild.me.voice.channel.leave();
+		  message.client.queue.delete(message.guild.id); 
           return queue.textChannel.send("Şarkı sırası sona erdi! - Kanaldan ayrılınıyor").catch(console.error);
       
     }
@@ -45,8 +45,9 @@ module.exports = {
     
     
     
-      queue.textChannel.send(`**Şarkı çalınıyor** - [${song.title}](${song.url})`)
+      queue.textChannel.send(`**Şuan Çalan** - [${song.title}](${song.url})`)
     
     
   }
+
 }

@@ -19,7 +19,7 @@ module.exports = {
       serverQueue.connection.dispatcher.pause(true)
 
 
-      return message.channel.send("✅ | Şuan ki şarkı durduruldu")
+      return message.channel.send(":play_pause: | Şuan ki şarkı durduruldu")
     }
   }
 }

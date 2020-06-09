@@ -19,6 +19,6 @@ module.exports = {
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
 
-    serverQueue.textChannel.send("**Şarkı durduruldu**");
+    serverQueue.textChannel.send(":octagonal_sign: | **Şarkı durduruldu**");
   }
 };

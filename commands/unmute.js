@@ -24,7 +24,7 @@ module.exports = {
             }
         }
         else {
-            message.channel.send('bu komut sadece musicbot adlı kanalda çalışır')
+            message.channel.send('Bu komut sadece **musicbot** adlı kanalda çalışır')
         }
     }
 }

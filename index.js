@@ -116,7 +116,7 @@ client.on("message", message => {
       client.commands.get(command).execute(client, message, args)
     } catch (err) { //IF IT CATCH ERROR
       console.log(err)
-      message.reply("Bu komutu kullamakta zorluk yaşıyorum.")
+      message.reply("Böyle bir komut yok. Komutları öğrenmek için **n!help** yazın")
     }
 
   }

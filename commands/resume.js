@@ -13,7 +13,7 @@ module.exports = {
       serverQueue.playing = true;
       serverQueue.connection.dispatcher.resume()
 
-      return message.channel.send("✅ | Şarkı devam ettirildi")
+      return message.channel.send(":play_pause: | Şarkı devam ettirildi")
     }
 
     message.channel.send("Devam ettirilecek şarkı yok")
