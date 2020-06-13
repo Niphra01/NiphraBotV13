@@ -14,10 +14,10 @@ const app = express();
 app.use(keepalive);
 
 app.get('/', (req, res) => {
-res.json('This bot should be online! Uptimerobot will keep it alive');
+  res.json('This bot should be online! Uptimerobot will keep it alive');
 });
 app.get("/", (request, response) => {
-response.sendStatus(200);
+  response.sendStatus(200);
 });
 app.listen(process.env.PORT);
 
@@ -73,30 +73,29 @@ client.on("guildMemberRemove", member => {
   memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
 });
 client.on('messageDelete', message => {
-  try {
-    if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()) return
-    try {
-      if (!message.partials) {
-        const channel = client.channels.cache.get('712110998286499930')
 
-        if (channel) {
-          const embed = new MessageEmbed()
-            .setTitle('Silinen Mesaj')
-            .addField('Mesajı yazan', `${message.author.tag}`)
-            .addField('Silindiği Kanal', `${message.channel.name}`)
-            .setDescription(message.content)
-            .setTimestamp()
+  if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()) return
 
-          channel.send(embed)
-        }
+  if (!message.partials) {
+    const channel = client.channels.cache.get('712110998286499930')
+
+    if (channel) {
+      try {
+        const embed = new MessageEmbed()
+          .setTitle('Silinen Mesaj')
+          .addField('Mesajı yazan', `${message.author.tag}`)
+          .addField('Silindiği Kanal', `${message.channel.name}`)
+          .setDescription(message.content)
+          .setTimestamp()
+
+        channel.send(embed)
+      } catch (err) {
+        console.log('Eski bir mesaj silindi.')
       }
-    } catch (err) {
-      console.log('Eski bir mesaj silindi.')
     }
-  } catch (err) {
-    console.log('Eski bir mesaj silindi.')
   }
-})
+}
+)
 
 //WHEN SOMEONE MESSAGE
 client.on("message", message => {
