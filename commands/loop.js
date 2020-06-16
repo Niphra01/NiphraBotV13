@@ -1,6 +1,7 @@
 module.exports = {
   name: "loop",
-  description: "LOOP THE QUEUE",
+  aliases: ':arrows_counterclockwise:  loop',
+  description: "Şarkıyı döngüye sokar",
   execute(client, message, args) {
 
     const { channel } = message.member.voice;

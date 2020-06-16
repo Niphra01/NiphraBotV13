@@ -1,6 +1,7 @@
 module.exports = {
   name: "pause",
-  description: "pause the song",
+  aliases: ':pause_button: pause',
+  description: "Şarkıyı duraklatır",
   execute(client, message, args) {
     const { channel } = message.member.voice;
     if (!channel) {

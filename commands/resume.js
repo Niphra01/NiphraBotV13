@@ -1,6 +1,7 @@
 module.exports = {
   name: "resume",
-  description: "Resume the paused Song",
+  aliases: ':arrow_forward:  resume',
+  description: "Duraklatılmış şarkıyı devam ettirir",
   execute(client, message, args) {
     const { channel } = message.member.voice;
     if (!channel) {

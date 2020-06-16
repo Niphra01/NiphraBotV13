@@ -1,6 +1,7 @@
 module.exports = {
   name: "queue",
-  description: "get list of added songs",
+  aliases: 'queue',
+  description: "Sıradaki şarkıları gösterir",
   execute: (client, message, args) => {
     const { channel } = message.member.voice;
     if (!channel) {

@@ -3,7 +3,8 @@ const discord = require("discord.js");
 
 module.exports = {
     name: "hesap",
-    description: "Hesap yapar",
+    aliases: 'hesap',
+    description: "Hesap makinesi",
     async execute(client, message, args) {
 
         if (!args[0]) return message.channel.send("Bir değer giriniz!");

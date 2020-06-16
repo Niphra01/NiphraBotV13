@@ -1,9 +1,11 @@
 const discord = require("discord.js");
 module.exports = {
     name: "unmute",
-    description: "sesini açar",
+    aliases: ':sound: unmute',
+    description: "Belirtilen kullanıcının sesini açar",
     async execute(client, message, args, ops) {
         //if (message.author.id === "141311627373969408") return message.reply("Sadece 'SEN' bu yetkiyi kullanamazsın.");
+        if (!args[0]) return message.reply('Lütfen kullanıcıyı belirtiniz. Örnek: n!unmute <@NiphraBOT>')
         if (!message.member.permissions.has("KICK_MEMBERS")) return message.reply("Bu yetkiye sahip değilsiniz!");
         if (message.channel.id === '526541910685384704') {
             const user = message.mentions.users.first();

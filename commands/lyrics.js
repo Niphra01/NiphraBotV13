@@ -2,7 +2,8 @@ const Genius = new (require("genius-lyrics"))("ApavK7sxIw4WfaTNVe1g9Hc8civ8WqGW0
 const { MessageEmbed } = require("discord.js")
 module.exports = {
   name: "lyrics",
-  description: "Get lyrics of Song",
+  aliases: 'lyrics',
+  description: "Şarkı sözlerini yazdırır",
   async execute(client, message, args) {
 
     const { channel } = message.member.voice;

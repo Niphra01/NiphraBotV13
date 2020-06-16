@@ -1,7 +1,8 @@
 const discord = require("discord.js");
 module.exports = {
     name: "ban",
-    description: "oyuncuyu yasaklar",
+    aliases: 'ban',
+    description: "Kullanıcıyı yasaklar",
     async execute(client, message, args, ops) {
         if (!message.member.permissions.has("BAN_MEMBERS")) return message.reply("Bu yetkiye sahip değilsiniz!");
         const user = message.mentions.users.first();

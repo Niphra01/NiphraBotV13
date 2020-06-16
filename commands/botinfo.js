@@ -2,11 +2,12 @@ const Discord = require("discord.js");
 
 module.exports = {
     name: "botinfo",
-    description: "Niphra tarafından oluşturuldu",
+    aliases: ':page_facing_up: botinfo',
+    description: "Bot bilgisini gösterir",
     async execute(client, message, args) {
 
         let boticon = client.user.displayAvatarURL();
-        const botembed = new Discord.MessageEmbed() 
+        const botembed = new Discord.MessageEmbed()
             .setColor("0ED4DA")
             .setThumbnail(boticon)
             .setTitle(`${client.user.username}`)

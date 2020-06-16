@@ -1,6 +1,7 @@
 module.exports = {
   name: "skip",
-  description: "Skip the song or shift song to next",
+  aliases: ':fast_forward:  skip',
+  description: "Çalan şarkıyı atlar",
   execute(client, message, args) {
     const { channel } = message.member.voice;
 

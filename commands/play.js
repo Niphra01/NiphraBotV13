@@ -7,7 +7,8 @@ const youtube = new YoutubeAPI(YOUTUBE_API_KEY);
 const { play } = require("../system/music.js")
 module.exports = {
   name: "play",
-  description: "PLAY THE SOFTNESS OF THE SOUND",
+  aliases: ':musical_note: play',
+  description: "Şarkı çalar",
   async execute(client, message, args) {
     //FIRST OF ALL WE WILL ADD ERROR MESSAGE AND PERMISSION MESSSAGE
     if (!args.length) {
@@ -29,7 +30,7 @@ module.exports = {
     const urlcheck = videoPattern.test(args[0]);
 
     if (!videoPattern.test(args[0]) && playlistPattern.test(args[0])) {
-     return message.channel.send("PLAYLIST oynatılamıyor");
+      return message.channel.send("PLAYLIST oynatılamıyor");
     }
 
     const serverQueue = message.client.queue.get(message.guild.id);

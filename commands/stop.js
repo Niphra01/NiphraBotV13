@@ -2,7 +2,8 @@ const discord = require("discord.js");
 
 module.exports = {
   name: "stop",
-  description: "Stop the music",
+  aliases: ':no_entry: stop',
+  description: "Şarkıları durdurur.",
   execute(client, message, args) {
     const { channel } = message.member.voice;
     if (!channel) {
