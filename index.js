@@ -1,3 +1,4 @@
+require("./server.js");
 require('dotenv').config()
 const discord = require("discord.js")
 const { Client, MessageEmbed } = require('discord.js')
@@ -5,21 +6,6 @@ const client = new discord.Client({ disableEveryone: true, disabledEvents: ["TYP
 const { readdirSync } = require("fs");
 const { join } = require("path");
 const PREFIX = process.env.PREFIX;
-
-const express = require('express');
-const keepalive = require('express-glitch-keepalive');
-
-const app = express();
-
-app.use(keepalive);
-
-app.get('/', (req, res) => {
-  res.json('This bot should be online! Uptimerobot will keep it alive');
-});
-app.get("/", (request, response) => {
-  response.sendStatus(200);
-});
-app.listen(process.env.PORT);
 
 //CLIENT EVENTS
 client.on("ready", () => {
