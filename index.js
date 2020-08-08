@@ -1,4 +1,4 @@
-require("./server.js");
+//require("./server.js");
 require('dotenv').config()
 const discord = require("discord.js")
 const { Client, MessageEmbed } = require('discord.js')
