@@ -30,7 +30,7 @@ module.exports = {
     const urlcheck = videoPattern.test(args[0]);
 
     if (!videoPattern.test(args[0]) && playlistPattern.test(args[0])) {
-      return message.channel.send("PLAYLIST oynatılamıyor");
+      return message.channel.send("PLAYLIST oynatma şu an sorunlu");
     }
 
     const serverQueue = message.client.queue.get(message.guild.id);
