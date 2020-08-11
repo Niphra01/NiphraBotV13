@@ -60,7 +60,7 @@ client.on("guildMemberRemove", member => {
 });
 client.on('messageDelete', message => {
 
-  if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()) return
+  if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()||message.guild.id !=='249951409070407681') return
 
   if (!message.partials) {
     const channel = client.channels.cache.get('712110998286499930')
@@ -84,7 +84,7 @@ client.on('messageDelete', message => {
 )
 
 //WHEN SOMEONE MESSAGE
-client.on("message", message => {
+client.on("message",async message => {
   if (message.author.bot) return;
   if (!message.guild) return;
 
@@ -105,6 +105,19 @@ client.on("message", message => {
     }
 
   }
+  let chatFilter = ['YASAK'];
+  const wordPicker = message.content.toUpperCase().split(' ')
+  for(var i=0;i < chatFilter.length;i++){
+    if(wordPicker.includes(chatFilter[i])){
+      try{
+        await message.delete();
+        await message.channel.send('Yasaklı kelime kullandın');
+      }catch(err){
+        console.log('Hata')
+      }
+    }
+  }
+  
 });
 
 
