@@ -15,8 +15,12 @@ module.exports = {
     if (!serverQueue) {
       return message.channel.send("Geçilebilecek şarkı yok");
     }
-
+    try{
     serverQueue.connection.dispatcher.end();
+	}catch(err)
+	{
+		console.log('Şarkı geçilirken hata meydana geldi ',err);
+	}
     message.channel.send(":white_check_mark: | Şarkı geçildi");
   }
 };
