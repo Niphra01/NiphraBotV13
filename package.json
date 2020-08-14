@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": "13.11.0",
-	"npm": "6.13.7"
+    "npm": "6.13.7"
   },
   "author": "Niphra",
   "license": "ISC",
@@ -28,6 +28,7 @@
     "node-keepalive": "0.0.1",
     "path": "^0.12.7",
     "simple-youtube-api": "^5.2.1",
+    "snekfetch": "^4.0.4",
     "ytdl-core": "^2.1.2",
     "ytdl-core-discord": "^1.2.0"
   }
