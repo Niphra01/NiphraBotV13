@@ -16,7 +16,8 @@ module.exports = {
                     if (member.voice.channel) {
                         member.voice.setDeaf(true);
                         member.voice.setMute(true);
-                        //message.channel.bulkDelete(1);
+                        message.channel.bulkDelete(1);
+						console.log(`${user.username} mutelendi`)
                     } else { message.reply("Üye sesli bir kanalda değil.") }
 
                 } else {
