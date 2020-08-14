@@ -15,6 +15,7 @@ module.exports = {
                         member.voice.setDeaf(false);
                         member.voice.setMute(false);
                         //message.channel.bulkDelete(1);
+                        console.log(`${user.username} mutesi açıldı`)
                     } else { message.reply("Üye sesli bir kanalda değil.") }
                 } else {
                     message.reply("Sunucuda böyle bir üye yok.");
