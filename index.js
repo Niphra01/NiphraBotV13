@@ -58,9 +58,12 @@ client.on("guildMemberRemove", member => {
   const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
   memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
 });
-client.on('messageDelete', message => {
-
+client.on('messageDelete',async message => {
+try{
   if (message.channel.id === '526541910685384704' || message.author.bot || message.attachments.first()||message.guild.id !=='249951409070407681') return
+}catch(err){
+  console.log('Mesaj silme başarı ile gerçekleşti fakat Hata alındı')
+}
 
   if (!message.partials) {
     const channel = client.channels.cache.get('712110998286499930')
@@ -111,7 +114,7 @@ client.on("message",async message => {
     if(wordPicker.includes(chatFilter[i])){
       try{
         await message.delete();
-        await message.channel.send('Yasaklı kelime kullandın');
+        await message.reply('Yasaklı kelime kullandın');
       }catch(err){
         console.log('Hata')
       }
