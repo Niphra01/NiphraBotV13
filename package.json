@@ -24,11 +24,12 @@
     "genius-lyrics": "^2.0.1",
     "http": "0.0.1-security",
     "math-expression-evaluator": "^1.2.22",
-    "moment": "^2.25.3",
+    "moment": "^2.27.0",
     "node-keepalive": "0.0.1",
     "path": "^0.12.7",
     "simple-youtube-api": "^5.2.1",
     "snekfetch": "^4.0.4",
+    "sqlite": "^2.8.0",
     "ytdl-core": "^2.1.2",
     "ytdl-core-discord": "^1.2.0"
   }
