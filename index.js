@@ -25,10 +25,10 @@ client.on("ready", () => {
 })
 
 client.once('shardReconnecting', () => {
-  console.log('Reconnect!');
+  console.log('Reconnected!');
 });
 client.once('shardDisconnected', () => {
-  console.log('Disconnect!');
+  console.log('Disconnected!');
 });
 
 client.on("warn", info => console.log(info));
