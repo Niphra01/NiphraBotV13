@@ -7,7 +7,8 @@ const { readdirSync } = require("fs");
 const { join } = require("path");
 const PREFIX = process.env.PREFIX;
 const moment = require('moment');
-const sql = require('sqlite')
+const sql = require('sqlite');
+const { Console } = require("console");
 
 
 sql.open('./Logs.sqlite');
@@ -24,7 +25,7 @@ client.on("ready", () => {
 })
 
 client.once('shardReconnecting', () => {
-  console.log('Reconnecting!');
+  console.log('Reconnect!');
 });
 client.once('shardDisconnected', () => {
   console.log('Disconnect!');
@@ -96,24 +97,37 @@ client.on("message", async message => {
   if (message.author.bot) return;
   if (!message.guild) return;
   let tStamp = moment().format('LLLL'); //creates time stamp
-  if(message.attachments.first()) return;
-  else{
-  if (message.channel.type == 'dm') { //checks for DM - Creates a DM DB and records
-    let dmName = `${message.author.username}DM`;
-    sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
-      sql.run(`CREATE TABLE IF NOT EXISTS ${dmName} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
-        sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
-      })
-    })
-  } else { //otherwise it's a normal channel
-    sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
-      console.error;
-      sql.run(`CREATE TABLE IF NOT EXISTS ${message.channel.name} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
-        sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
-      }) // KNOWN ISSUE: Does not like channels with "-" in them
-    })
+  if (message.attachments.first()) return;
+  else {
+    const channelNameFilter = ['-'];
+    const channelNamePicker = message.channel.name;
+    for (var i = 0; i < channelNameFilter.length; i++) {
+      if (channelNamePicker.includes(channelNamePicker[i])) {
+        console.log(`Message can't be logged because Channel name contains '-' in them.`);
+      }
+      else {
+        if (message.channel.type == 'dm') { //checks for DM - Creates a DM DB and records
+          let dmName = `${message.author.username}DM`;
+          sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
+            sql.run(`CREATE TABLE IF NOT EXISTS ${dmName} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
+              sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
+            })
+          })
+          console.log(`Message Logged. |  ` + moment().format('LT'))
+        }
+        else {
+          sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
+            console.error;
+            sql.run(`CREATE TABLE IF NOT EXISTS ${message.channel.name} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
+              sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
+            }) 
+          })
+          console.log(`Message Logged. |  ` + moment().format('LT'))
+        }
+      }
+    }
+
   }
-}
   if (message.content.startsWith(PREFIX)) { //IF MESSSAGE STARTS WITH MINE BOT PREFIX
 
     const args = message.content.slice(PREFIX.length).trim().split(/ +/) //removing prefix from args
