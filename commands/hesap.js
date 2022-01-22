@@ -20,6 +20,6 @@ module.exports = {
             .addField("Girdi", `\`\`\`js\n${args.join('')}\`\`\``)
             .addField("Çıktı", `\`\`\`js\n${resp}\`\`\``)
 
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     }
 }

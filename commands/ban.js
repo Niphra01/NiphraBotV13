@@ -7,7 +7,7 @@ module.exports = {
         if (!message.member.permissions.has("BAN_MEMBERS")) return message.reply("Bu yetkiye sahip değilsiniz!");
         const user = message.mentions.users.first();
         if (user) {
-            const member = message.guild.member(user);
+            const member = message.guild.members.cache.get(user.id);
             if (member) {
                 member.ban("Banlandıysan Niphra ile iletişime geç").then(() => {
                     message.reply(`${user.tag} banlandı.`);

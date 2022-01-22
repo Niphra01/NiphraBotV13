@@ -1,9 +1,9 @@
 const Discord = require("discord.js");
 
 module.exports = {
-    name: "userinfo",
-    aliases: ':page_facing_up: userinfo',
-    description: "Belirtilen kullanıcın bilgilerini gösterir",
+    name:("userinfo"),
+    aliases:(':page_facing_up: userinfo'),
+    description:("Belirtilen kullanıcın bilgilerini gösterir"),
     async execute(client, message, args, ops) {
         let user;
         if (message.mentions.users.first()) {
@@ -16,7 +16,7 @@ module.exports = {
         }
 
         console.log(args)
-        const member = message.guild.member(user);
+        const member = message.guild.members.cache.get(user.id);
         if (!user.bot) {
             const embed = new Discord.MessageEmbed()
                 .setColor("RANDOM")
@@ -25,10 +25,8 @@ module.exports = {
                 .addField("Takma Adı:", `${member.nickname !== null ? `${member.nickname}` : 'Yok'}`, true)
                 .addField("Oluşturulma Tarihi:", `${user.createdAt.toLocaleString()}`, true)
                 .addField('Sunucuya Katılma tarihi', `${member.joinedAt.toLocaleString()}`, true)
-                .addField("Durumu:", `${user.presence.status}`, true)
-                .addField("Oyun:", `${user.presence.activities[0] ? user.presence.activities[0].name : 'Oynamıyor'}`, true)
                 .addField("Rolleri:", `${member.roles.cache.map(role => role.toString()).join(', ')}`, true)
-            message.channel.send(embed);
+            message.channel.send({embeds: [embed]});
         } else {
             message.reply('Kullanıcı bir Bot')
         }

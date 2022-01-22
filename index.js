@@ -1,17 +1,12 @@
-require("./server.js");
 require('dotenv').config()
-const discord = require("discord.js")
-const { Client, MessageEmbed } = require('discord.js')
-const client = new discord.Client({ disableEveryone: true, disabledEvents: ["TYPING_START"], partials: ['MESSAGE'] });
-const { readdirSync } = require("fs");
-const { join } = require("path");
+const { Client, MessageEmbed, Intents, discord, Collection } = require('discord.js')
+const client = new Client({ intents:[Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]}) // 
+const fs = require('fs');
+const path = require("path");
 const PREFIX = process.env.PREFIX;
 const moment = require('moment');
-const sql = require('sqlite');
-const { Console } = require("console");
 
 
-sql.open('./Logs.sqlite');
 
 //CLIENT EVENTS
 client.on("ready", () => {
@@ -36,16 +31,16 @@ client.on("warn", info => console.log(info));
 client.on("error", console.error)
 
 //DEFINIING
-client.commands = new discord.Collection()
+client.commands = new Collection()
 client.prefix = PREFIX
-client.queue = new Map();
 
 
-//LETS LOAD ALL FILES
-const cmdFiles = readdirSync(join(__dirname, "commands")).filter(file => file.endsWith(".js"))
-for (const file of cmdFiles) {
-  const command = require(join(__dirname, "commands", file))
-  client.commands.set(command.name, command)
+// LETS LOAD ALL FILES
+const commandFiles = fs.readdirSync(path.join(__dirname,'commands')).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles){
+    const command = require(path.join(__dirname,'commands',file));
+    client.commands.set(command.name, command);
 } //LOADING DONE
 
 client.on("guildMemberAdd", member => {
@@ -78,12 +73,12 @@ client.on('messageDelete', async message => {
       try {
         const embed = new MessageEmbed()
           .setTitle('Silinen Mesaj')
-          .addField('Mesajı yazan', `${message.author.tag}`)
-          .addField('Silindiği Kanal', `${message.channel.name}`)
+          .addField('Mesajı yazan', `${message.author.tag}`.toString())
+          .addField('Silindiği Kanal', `${message.channel.name}`.toString())
           .setDescription(message.content)
           .setTimestamp()
 
-        channel.send(embed)
+        channel.send({embeds:[embed]})
       } catch (err) {
         console.log('Eski bir mesaj silindi.')
       }
@@ -93,41 +88,9 @@ client.on('messageDelete', async message => {
 )
 
 //WHEN SOMEONE MESSAGE
-client.on("message", async message => {
+client.on("messageCreate", async message => {
   if (message.author.bot) return;
   if (!message.guild) return;
-  let tStamp = moment().format('LLLL'); //creates time stamp
-  if (message.attachments.first()) return;
-  else {
-    const channelNameFilter = ['-'];
-    const channelNamePicker = message.channel.name;
-    for (var i = 0; i < channelNameFilter.length; i++) {
-      if (channelNamePicker.includes(channelNamePicker[i])) {
-        console.log(`Message can't be logged because Channel name contains '-' in them.`);
-      }
-      else {
-        if (message.channel.type == 'dm') { //checks for DM - Creates a DM DB and records
-          let dmName = `${message.author.username}DM`;
-          sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
-            sql.run(`CREATE TABLE IF NOT EXISTS ${dmName} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
-              sql.run(`INSERT INTO ${dmName} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
-            })
-          })
-          console.log(`Message Logged. |  ` + moment().format('LT'))
-        }
-        else {
-          sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]).catch(() => {
-            console.error;
-            sql.run(`CREATE TABLE IF NOT EXISTS ${message.channel.name} (username TEXT, message TEXT, timestamp TEXT, userID TEXT);`).then(() => {
-              sql.run(`INSERT INTO ${message.channel.name} (username, message, timestamp, userID) VALUES (?,?,?,?)`, [message.author.username, message.content, tStamp, message.author.id]);
-            }) 
-          })
-          console.log(`Message Logged. |  ` + moment().format('LT'))
-        }
-      }
-    }
-
-  }
   if (message.content.startsWith(PREFIX)) { //IF MESSSAGE STARTS WITH MINE BOT PREFIX
 
     const args = message.content.slice(PREFIX.length).trim().split(/ +/) //removing prefix from args
@@ -150,8 +113,8 @@ client.on("message", async message => {
   for (var i = 0; i < chatFilter.length; i++) {
     if (wordPicker.includes(chatFilter[i])) {
       try {
-        await message.delete();
         await message.reply('Yasaklı kelime kullandın');
+        await message.delete();  
       } catch (err) {
         console.log('Hata')
       }

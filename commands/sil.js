@@ -11,9 +11,10 @@ module.exports = {
         message.channel.send(`${args[0]} mesaj silindi.`).then(message => message.delete({ timeout: 5000 }));
       }).catch(err => {
         console.log('14 günden önceki mesaj silinmeye çalışıldı')
+        message.reply("14 günden önceki mesajları silemezsin");
       });
     } catch (err) {
-      message.reply("14 günden önceki mesajları silemessin");
+      message.reply("14 günden önceki mesajları silemezsin");
       console.log('14 günden önceki mesaj silinmeye çalışıldı')
     }
   }

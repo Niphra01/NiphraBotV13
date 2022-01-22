@@ -11,7 +11,7 @@ module.exports = {
        
             const user = message.mentions.users.first();
             if (user) {
-                const member = message.guild.member(user);
+                const member = message.guild.members.cache.get(user.id);
                 if (member) {
                     if (member.voice.channel) {
                         member.voice.setDeaf(true);

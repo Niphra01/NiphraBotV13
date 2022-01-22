@@ -9,7 +9,7 @@ module.exports = {
     const helpEmbed = new discord.MessageEmbed()
       .setTitle('Komutlar')
       .setDescription('PREFIX: n!')
-      .setFooter('Örnek n!userinfo <@user>')
+      .setFooter('Örnek -userinfo <@user>')
     commands.forEach((cmd) => {
       helpEmbed.addField(
         `**${cmd.aliases ? `(${cmd.aliases})` : ""}**`,
@@ -17,7 +17,7 @@ module.exports = {
       );
     });
     helpEmbed.setTimestamp();
-    message.channel.send(helpEmbed);
+    message.channel.send({embeds: [helpEmbed]});
   }
 
 }
