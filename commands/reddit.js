@@ -12,7 +12,7 @@ module.exports = {
 
             const { body } = await snekfetch
                 .get(`https://www.reddit.com/r/${name}.json?sort=top&t=all`)
-                .query({ limit: 800 });
+                .query({ limit: 5 });
             const allowed = message.channel.nsfw ? body.data.children : body.data.children.filter(post => !post.data.over_18);
             if (!allowed.length) return message.channel.send('Belirtilen subreddit için NSFW kanalı gerekli');
             const randomnumber = Math.floor(Math.random() * allowed.length)
