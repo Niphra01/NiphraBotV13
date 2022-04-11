@@ -12,7 +12,7 @@ module.exports = {
                 member.ban("Banlandıysan Niphra ile iletişime geç").then(() => {
                     message.reply(`${user.tag} banlandı.`);
                 }).catch(err => {
-                    message.reply("Sen kim köpek bu üyeyi banlamaya çalışmak.");
+                    message.reply("Böyle bir yetkin yok.");
                     console.log(err);
                 })
             } else {
