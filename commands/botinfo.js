@@ -15,7 +15,7 @@ module.exports = {
             .addField("Bot Oluşturulma Tarihi", client.user.createdAt.toString())
             .addField("Sunucular", client.guilds.cache.size.toString())
 
-        message.channel.send({embeds: [botembed]})
+        message.channel.send({ embeds: [botembed] })
     }
 
 
