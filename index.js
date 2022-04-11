@@ -1,6 +1,6 @@
 require('dotenv').config()
 const { Client, MessageEmbed, Intents, discord, Collection } = require('discord.js')
-const client = new Client({ intents:[Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]}) // 
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES] }) // 
 const fs = require('fs');
 const path = require("path");
 const PREFIX = process.env.PREFIX;
@@ -11,12 +11,15 @@ const moment = require('moment');
 //CLIENT EVENTS
 client.on("ready", () => {
   console.log('Bot hazır')
-  client.user.setActivity("n! - Gavat Sofu ile")
-  const armutSporGuild = client.guilds.cache.get('249951409070407681')
-  const memberCount = armutSporGuild.memberCount
-  const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
-  memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
-  console.log('Üye Sayısı : ' + memberCount)
+  client.user.setActivity("Working on Spotify and Youtube music implement")
+  try {
+    const armutSporGuild = client.guilds.cache.get('249951409070407681')
+    const memberCount = armutSporGuild.memberCount
+    const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
+    memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
+    console.log('Üye Sayısı : ' + memberCount)
+  } catch (err) {
+  }
 })
 
 client.once('shardReconnecting', () => {
@@ -36,28 +39,34 @@ client.prefix = PREFIX
 
 
 // LETS LOAD ALL FILES
-const commandFiles = fs.readdirSync(path.join(__dirname,'commands')).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
 
-for (const file of commandFiles){
-    const command = require(path.join(__dirname,'commands',file));
-    client.commands.set(command.name, command);
+for (const file of commandFiles) {
+  const command = require(path.join(__dirname, 'commands', file));
+  client.commands.set(command.name, command);
 } //LOADING DONE
 
 client.on("guildMemberAdd", member => {
-  var role = member.guild.roles.cache.find(role => role.name === "Yeni Üye");
-  member.guild.channels.cache.get("617071160957337638").send("**" + member.user.username + "**, Hoşgeldin Toprağım");
-  member.roles.add(role);
-  const armutSporGuild = client.guilds.cache.get('249951409070407681')
-  const memberCount = armutSporGuild.memberCount
-  const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
-  memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
+  try {
+    var role = member.guild.roles.cache.find(role => role.name === "Yeni Üye");
+    member.guild.channels.cache.get("617071160957337638").send("**" + member.user.username + "**, Hoşgeldin Toprağım");
+    member.roles.add(role);
+    const armutSporGuild = client.guilds.cache.get('249951409070407681')
+    const memberCount = armutSporGuild.memberCount
+    const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
+    memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
+  } catch (err) {
+  }
 });
 client.on("guildMemberRemove", member => {
-  member.guild.channels.cache.get("617071160957337638").send("**" + member.user.username + "**, Güle güle");
-  const armutSporGuild = client.guilds.cache.get('249951409070407681')
-  const memberCount = armutSporGuild.memberCount
-  const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
-  memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
+  try {
+    member.guild.channels.cache.get("617071160957337638").send("**" + member.user.username + "**, Güle güle");
+    const armutSporGuild = client.guilds.cache.get('249951409070407681')
+    const memberCount = armutSporGuild.memberCount
+    const memberCountChannel = armutSporGuild.channels.cache.get('714001061681168384')
+    memberCountChannel.setName(`Üye Sayısı :  ` + memberCount)
+  } catch (err) {
+  }
 });
 client.on('messageDelete', async message => {
   try {
@@ -78,7 +87,7 @@ client.on('messageDelete', async message => {
           .setDescription(message.content)
           .setTimestamp()
 
-        channel.send({embeds:[embed]})
+        channel.send({ embeds: [embed] })
       } catch (err) {
         console.log('Eski bir mesaj silindi.')
       }
@@ -114,7 +123,7 @@ client.on("messageCreate", async message => {
     if (wordPicker.includes(chatFilter[i])) {
       try {
         await message.reply('Yasaklı kelime kullandın');
-        await message.delete();  
+        await message.delete();
       } catch (err) {
         console.log('Hata')
       }
