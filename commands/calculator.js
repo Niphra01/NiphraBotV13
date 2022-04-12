@@ -7,18 +7,18 @@ module.exports = {
     description: "Hesap makinesi",
     async execute(client, message, args) {
 
-        if (!args[0]) return message.channel.send("Bir değer giriniz!");
+        if (!args[0]) return message.channel.send("Enter a Value!");
         let resp;
         try {
             resp = math.eval(args.join(''));
         } catch (e) {
-            return message.channel.send("Geçerli bir değer giriniz!");
+            return message.channel.send("Please Enter a valid Value!");
         }
         const embed = new discord.MessageEmbed()
             .setColor(0xffffff)
-            .setTitle("Matematik hesaplaması")
-            .addField("Girdi", `\`\`\`js\n${args.join('')}\`\`\``)
-            .addField("Çıktı", `\`\`\`js\n${resp}\`\`\``)
+            .setTitle("Calculator")
+            .addField("Input", `\`\`\`js\n${args.join('')}\`\`\``)
+            .addField("Output", `\`\`\`js\n${resp}\`\`\``)
 
         message.channel.send({ embeds: [embed] });
     }

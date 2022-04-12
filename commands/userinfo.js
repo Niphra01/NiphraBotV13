@@ -22,13 +22,13 @@ module.exports = {
                 .setColor("RANDOM")
                 .setThumbnail(user.displayAvatarURL())
                 .setTitle(`${user.username}#${user.discriminator}`)
-                .addField("Takma Adı:", `${member.nickname !== null ? `${member.nickname}` : 'Yok'}`, true)
-                .addField("Oluşturulma Tarihi:", `${user.createdAt.toLocaleString()}`, true)
-                .addField('Sunucuya Katılma tarihi', `${member.joinedAt.toLocaleString()}`, true)
-                .addField("Rolleri:", `${member.roles.cache.map(role => role.toString()).join(', ')}`, true)
+                .addField("Nickname:", `${member.nickname !== null ? `${member.nickname}` : 'Null'}`, true)
+                .addField("Created at:", `${user.createdAt.toLocaleString()}`, true)
+                .addField('Joined at', `${member.joinedAt.toLocaleString()}`, true)
+                .addField("Roles:", `${member.roles.cache.map(role => role.toString()).join(', ')}`, true)
             message.channel.send({ embeds: [embed] });
         } else {
-            message.reply('Kullanıcı bir Bot')
+            message.reply('User is bot')
         }
 
 

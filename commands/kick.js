@@ -4,23 +4,23 @@ module.exports = {
     aliases: 'kick',
     description: "Kullanıcıyı atar",
     async execute(client, message, args, ops) {
-        if (!message.member.permissions.has("KICK_MEMBERS")) return message.reply("Bu yetkiye sahip değilsiniz!");
+        if (!message.member.permissions.has("KICK_MEMBERS")) return message.reply("You don't have this permission!");
         const user = message.mentions.users.first();
         if (user) {
             const member = message.guild.members.cache.get(user.id);
             if (member) {
-                member.kick("Hadi toprağım hadi bekleme yapma").then(() => {
-                    message.reply(`${user.tag} atıldı.`);
+                member.kick().then(() => {
+                    message.reply(`${user.tag} kicked.`);
                 }).catch(err => {
-                    message.reply("Sen kim köpek bu üyeyi atmaya çalışmak.");
+                    message.reply("You can't kick this user");
                     console.log(err);
                 })
             } else {
-                message.reply("Serverda böyle bir üye yok.");
+                message.reply("This user is not in this server.");
             }
         }
         else {
-            message.reply("Serverda böyle bir üye yok.");
+            message.reply("This user is not in this server.");
         }
     }
 }
