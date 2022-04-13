@@ -50,6 +50,7 @@ client.commands = new Collection();
 client.prefix = PREFIX;
 
 // LETS LOAD ALL FILES
+
 const commandFiles = fs
   .readdirSync(path.join(__dirname, "commands"))
   .filter((file) => file.endsWith(".js"));
@@ -59,8 +60,8 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 } //LOADING DONE
 
-//client.config = require("./config.js");
-client.player = new Player(client);
+client.config = require("./config");
+client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
 
 client.on("guildMemberAdd", (member) => {
