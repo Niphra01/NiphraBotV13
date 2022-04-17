@@ -18,7 +18,7 @@ const client = new Client({
 const fs = require("fs");
 const path = require("path");
 const PREFIX = process.env.PREFIX;
-const moment = require("moment");
+//const moment = require("moment");
 
 //CLIENT EVENTS
 client.on("ready", () => {
@@ -177,9 +177,7 @@ client.on("messageCreate", async (message) => {
     } catch (err) {
       //IF IT CATCH ERROR
       console.log(err);
-      message.reply(
-        "Can't find a command."
-      );
+      message.reply("Can't find a command.");
     }
   }
   // let chatFilter = [""];
