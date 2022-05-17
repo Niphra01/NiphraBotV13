@@ -1,7 +1,7 @@
 const { QueryType } = require("discord-player");
 
 module.exports = {
-  name: ("play", "p"),
+  name: "play",
   aliases: "play",
   description: "Plays Songs",
   voiceChannel: true,
