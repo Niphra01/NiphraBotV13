@@ -2,7 +2,7 @@ const math = require("math-expression-evaluator");
 const { MessageEmbed } = require("discord.js");
 
 module.exports = {
-  name: ("calculator", "calc"),
+  name: "calculator",
   aliases: "calculator",
   description: "Calculator",
   async execute(client, message, args) {
