@@ -9,21 +9,11 @@ module.exports = {
       return message.channel.send(
         "Set how many messages do you want to delete. Example <-delete 5>"
       );
-    try {
-      message.channel
-        .bulkDelete(parseInt(args[0]) + 1)
-        .then(() => {
-          message.channel
-            .send(`${args[0]} message deleted.`)
-            .then((message) => message.delete({ timeout: 5000 }));
-        })
-        .catch((err) => {
-          console.log("Discord 14 days thingy");
-          message.reply("Can't delete 14 days older messages");
-        });
-    } catch (err) {
-      message.reply("Can't delete 14 days older messages");
-      console.log("Discord 14 days thingy");
-    }
+    const deleteCount = parseInt(args[0], true);
+    if (!deleteCount || deleteCount < 1 || deleteCount > 100) return;
+
+    message.channel.bulkDelete(deleteCount + 1)
+      .then(message => { message.channel.send(`${args[0]} message deleted`)})
+      .catch(error => console.log(`Couldn't delete messages because of: ${error}`));
   },
 };
