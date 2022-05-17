@@ -1,4 +1,6 @@
 require("dotenv").config();
+
+const { channel } = require("diagnostics_channel");
 const { Player } = require("discord-player");
 const {
   Client,
@@ -6,6 +8,7 @@ const {
   Intents,
   discord,
   Collection,
+  Guild,
 } = require("discord.js");
 const client = new Client({
   intents: [
@@ -18,20 +21,11 @@ const client = new Client({
 const fs = require("fs");
 const path = require("path");
 const PREFIX = process.env.PREFIX;
-//const moment = require("moment");
 
 //CLIENT EVENTS
 client.on("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
-  try {
-    const armutSporGuild = client.guilds.cache.get("249951409070407681");
-    const memberCount = armutSporGuild.memberCount;
-    const memberCountChannel =
-      armutSporGuild.channels.cache.get("714001061681168384");
-    memberCountChannel.setName(`Members :  ` + memberCount);
-    console.log("Members : " + memberCount);
-  } catch (err) {}
 });
 
 client.once("shardReconnecting", () => {
@@ -73,58 +67,15 @@ client.on("guildMemberAdd", (member) => {
       .get("617071160957337638")
       .send("**" + member.user.username + "** , joined");
     member.roles.add(role);
-    const armutSporGuild = client.guilds.cache.get("249951409070407681");
-    const memberCount = armutSporGuild.memberCount;
-    const memberCountChannel =
-      armutSporGuild.channels.cache.get("714001061681168384");
-    memberCountChannel.setName(`Members :  ` + memberCount);
-  } catch (err) {}
+  } catch (err) { }
 });
 client.on("guildMemberRemove", (member) => {
   try {
     member.guild.channels.cache
       .get("617071160957337638")
       .send("**" + member.user.username + "**, left");
-    const armutSporGuild = client.guilds.cache.get("249951409070407681");
-    const memberCount = armutSporGuild.memberCount;
-    const memberCountChannel =
-      armutSporGuild.channels.cache.get("714001061681168384");
-    memberCountChannel.setName(`Members :  ` + memberCount);
-  } catch (err) {}
+  } catch (err) { }
 });
-client.on("messageDelete", async (message) => {
-  try {
-    if (
-      message.channel.id === "526541910685384704" ||
-      message.author.bot ||
-      message.attachments.first() ||
-      message.guild.id !== "249951409070407681"
-    )
-      return;
-  } catch (err) {
-    console.log("Discord 14 days thingy");
-  }
-
-  if (!message.partials) {
-    const channel = client.channels.cache.get("712110998286499930");
-
-    if (channel) {
-      try {
-        const embed = new MessageEmbed()
-          .setTitle("Deleted Message")
-          .addField("Message Author", `${message.author.tag}`.toString())
-          .addField("Deleted Channel", `${message.channel.name}`.toString())
-          .setDescription(message.content)
-          .setTimestamp();
-
-        channel.send({ embeds: [embed] });
-      } catch (err) {
-        console.log("Deleted an old message");
-      }
-    }
-  }
-});
-
 player.on("trackStart", (queue, track) => {
   if (queue.repeatMode !== 0) return;
   queue.metadata.send({
@@ -180,18 +131,6 @@ client.on("messageCreate", async (message) => {
       message.reply("Can't find a command.");
     }
   }
-  // let chatFilter = [""];
-  // const wordPicker = message.content.toUpperCase().split(" ");
-  // for (var i = 0; i < chatFilter.length; i++) {
-  //   if (wordPicker.includes(chatFilter[i])) {
-  //     try {
-  //       await message.reply("Please be respectful to each other");
-  //       await message.delete();
-  //     } catch (err) {
-  //       console.log("------------ Error");
-  //     }
-  //   }
-  // }
 });
 
 client.login(process.env.TOKEN);
