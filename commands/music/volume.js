@@ -1,4 +1,4 @@
-const maxVol = require("../config.js").opt.maxVol;
+const maxVol = require("../../config.js").opt.maxVol;
 
 module.exports = {
   name: "volume",

@@ -1,15 +1,7 @@
 require("dotenv").config();
 
-const { channel } = require("diagnostics_channel");
 const { Player } = require("discord-player");
-const {
-  Client,
-  MessageEmbed,
-  Intents,
-  discord,
-  Collection,
-  Guild,
-} = require("discord.js");
+const { Client, Intents, Collection } = require("discord.js");
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -20,7 +12,33 @@ const client = new Client({
 }); //
 const fs = require("fs");
 const path = require("path");
+
+//DEFINING
 const PREFIX = process.env.PREFIX;
+client.config = require("./config");
+client.player = new Player(client, client.config.opt.discordPlayer);
+const player = client.player;
+client.commands = new Collection();
+client.prefix = PREFIX;
+
+// LOADING ALL FILES UNDER THE COMMANDS
+const folders = fs.readdirSync("./commands/");
+for (var i = 0; i < folders.length; i++) {
+  const altFolders = folders[i].split(", ");
+  for (var j = 0; j < altFolders.length; j++) {
+    const commandFiles = fs
+      .readdirSync(`./commands/${altFolders[j]}`)
+      .filter((file) => file.endsWith(".js"));
+    for (const file of commandFiles) {
+      const command = require(path.join(
+        __dirname,
+        `./commands/${altFolders[j]}`,
+        file
+      ));
+      client.commands.set(command.name, command);
+    }
+  }
+}
 
 //CLIENT EVENTS
 client.on("ready", () => {
@@ -39,25 +57,6 @@ client.on("warn", (info) => console.log(info));
 
 client.on("error", console.error);
 
-//DEFINIING
-client.commands = new Collection();
-client.prefix = PREFIX;
-
-// LETS LOAD ALL FILES
-
-const commandFiles = fs
-  .readdirSync(path.join(__dirname, "commands"))
-  .filter((file) => file.endsWith(".js"));
-
-for (const file of commandFiles) {
-  const command = require(path.join(__dirname, "commands", file));
-  client.commands.set(command.name, command);
-} //LOADING DONE
-
-client.config = require("./config");
-client.player = new Player(client, client.config.opt.discordPlayer);
-const player = client.player;
-
 client.on("guildMemberAdd", (member) => {
   try {
     var role = member.guild.roles.cache.find(
@@ -67,15 +66,17 @@ client.on("guildMemberAdd", (member) => {
       .get("617071160957337638")
       .send("**" + member.user.username + "** , joined");
     member.roles.add(role);
-  } catch (err) { }
+  } catch (err) {}
 });
 client.on("guildMemberRemove", (member) => {
   try {
     member.guild.channels.cache
       .get("617071160957337638")
       .send("**" + member.user.username + "**, left");
-  } catch (err) { }
+  } catch (err) {}
 });
+
+//MUSIC PLAYER EVENTS
 player.on("trackStart", (queue, track) => {
   if (queue.repeatMode !== 0) return;
   queue.metadata.send({
@@ -113,7 +114,7 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (message.content.startsWith(PREFIX)) {
-    //IF MESSSAGE STARTS WITH MINE BOT PREFIX
+    //IF MESSAGE STARTS WITH BOT PREFIX
 
     const args = message.content.slice(PREFIX.length).trim().split(/ +/); //removing prefix from args
     const command = args.shift().toLowerCase();
@@ -122,11 +123,10 @@ client.on("messageCreate", async (message) => {
       return;
     }
 
+    //IF COMMAND EXISTS
     try {
-      //TRY TO GET COMMAND AND EXECUTE
       client.commands.get(command).execute(client, message, args);
     } catch (err) {
-      //IF IT CATCH ERROR
       console.log(err);
       message.reply("Can't find a command.");
     }
