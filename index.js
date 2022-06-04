@@ -1,5 +1,6 @@
 require("dotenv").config();
-
+var Mongo = require("./src/dbServer.js");
+var getGames = require("./src/fetchGames.js");
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
 const client = new Client({
@@ -44,6 +45,7 @@ for (var i = 0; i < folders.length; i++) {
 client.on("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
+  getGames.getPosts();
 });
 
 client.once("shardReconnecting", () => {
