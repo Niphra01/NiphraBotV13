@@ -5,10 +5,10 @@ module.exports = {
   aliases: ":page_facing_up: botinfo",
   description: "Shows the Bot info",
   async execute(client, message) {
-    let boticon = client.user.displayAvatarURL();
-    const botembed = new MessageEmbed()
+    let botIcon = client.user.displayAvatarURL();
+    const botEmbed = new MessageEmbed()
       .setColor("0ED4DA")
-      .setThumbnail(boticon)
+      .setThumbnail(botIcon)
       .setTitle(`${client.user.username}`)
       .addField(
         "Developer",
@@ -17,6 +17,6 @@ module.exports = {
       .addField("Created at", client.user.createdAt.toString())
       .addField("Servers", client.guilds.cache.size.toString());
 
-    message.channel.send({ embeds: [botembed] });
+    message.channel.send({ embeds: [botEmbed] });
   },
 };

@@ -1,11 +1,8 @@
 var Mongo = require("./dbServer.js");
-const { Client, Intents } = require("discord.js");
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const nodeFetch = require("node-fetch");
-const freeGamesChannel = client.channels.cache.get("971813922418073600");
-setInterval(getPosts, 1000 * 60 * 60);
 
-async function getPosts() {
+const nodeFetch = require("node-fetch");
+
+async function getPosts(client) {
   await Mongo.mongoClient.connect();
 
   const findResult = await Mongo.dbo
@@ -33,12 +30,13 @@ async function getPosts() {
               dataId: [hasData[i].data.id],
             },
           ]);
-          freeGamesChannel.send(hasData[i].data.url);
+          client.channels.cache
+            .get("971813922418073600")
+            .send(hasData[i].data.url);
         }
       }
     }
   }
-  console.log("started");
   await Mongo.mongoClient.close();
 }
 module.exports = { getPosts, setInterval };

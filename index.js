@@ -16,7 +16,7 @@ const path = require("path");
 
 //DEFINING
 const PREFIX = process.env.PREFIX;
-client.config = require("./config");
+client.config = require("./src/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
 client.commands = new Collection();
@@ -42,10 +42,11 @@ for (var i = 0; i < folders.length; i++) {
 }
 
 //CLIENT EVENTS
-client.on("ready", () => {
+client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
-  getGames.getPosts();
+  setInterval(getGames.getPosts, 1000 * 60 * 60);
+  getGames.getPosts(client);
 });
 
 client.once("shardReconnecting", () => {
