@@ -4,7 +4,7 @@ require("dotenv").config();
 module.exports = {
   name: "reddit",
   async execute(client, message, args) {
-    const targetURL = `https://reddit.com/r/${args[0]}/.json?limit=100`;
+    const targetURL = `https://reddit.com/r/${args[0]}/new/.json?limit=100`;
     const resp = await nodeFetch(targetURL, {
       Header: { "user-agent": process.env.USERAGENT },
     });

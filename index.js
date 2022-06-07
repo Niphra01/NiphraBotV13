@@ -1,5 +1,4 @@
 require("dotenv").config();
-var Mongo = require("./src/dbServer.js");
 var getGames = require("./src/fetchGames.js");
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
@@ -45,7 +44,7 @@ for (var i = 0; i < folders.length; i++) {
 client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
-  setInterval(getGames.getPosts, 1000 * 60 * 60);
+
   getGames.getPosts(client);
 });
 
