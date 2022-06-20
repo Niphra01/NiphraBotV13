@@ -8,12 +8,9 @@ module.exports = {
     let user;
     if (message.mentions.users.first()) {
       user = message.mentions.users.first();
-      console.log(message.mentions);
     } else {
-      user = message.author;
-      console.log(message.author);
+      return message.reply({ content: "Please mention a user!" });
     }
-    console.log(args);
     const avatarEmbed = new MessageEmbed()
       .setColor(0x333333)
       .setAuthor(user.username)

@@ -1,63 +1,67 @@
-var Mongo = require("./dbServer.js");
+var Mongo = require("./dbServer");
 
 const nodeFetch = require("node-fetch");
 const date = new Date();
-sentGames = [];
-setInterval(getPosts, 1000 * 60 * 60);
+
 async function getPosts(client) {
   await Mongo.mongoClient.connect();
 
+  //finding all the data to array in FetchedGames collection from database
   const findResult = await Mongo.dbo
     .collection("FetchedGames")
     .find({})
     .toArray();
-  const targetURL = "https://reddit.com/r/GameDeals/new/.json?limit=50";
+
+  //Getting posts from the freegames subreddit
+  const targetURL = "https://reddit.com/r/freegames/new/.json?limit=15";
   const resp = await nodeFetch(targetURL, {
     Header: { "user-agent": process.env.USERAGENT },
   });
-  const data = await resp.json();
-  const hasData = data.data.children;
+  const res = await resp.json();
+  const posts = res.data.children;
 
-  const conditions = ["free", "Free", "FREE"];
-
+  //Checking collection has data in it
   if (findResult.length === 0) {
-    for (var i = 0; i < hasData.length; i++) {
-      if (conditions.some((el) => hasData[i].data.title.includes(el))) {
+    for (var i = 0; i < posts.length; i++) {
+      if (posts[i].data.link_flair_text === "Commercial Game") {
         await Mongo.dbo.collection("FetchedGames").insertMany([
           {
-            dataId: [hasData[i].data.id],
-            dataName: [hasData[i].data.title],
+            dataId: [posts[i].data.id],
+            dataName: [posts[i].data.title],
             dataDate: [date.toLocaleDateString()],
           },
         ]);
         client.channels.cache
-          .get("971813922418073600") //971813922418073600  ,,  373764394385014786
+          .get("373764394385014786")
           .send(
-            `@everyone ${hasData[i].data.title}  \n ${hasData[i].data.url}`
+            `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
           );
       }
     }
   } else {
-    for (var i = 0; i < hasData.length; i++) {
-      if (conditions.some((el) => hasData[i].data.title.includes(el))) {
+    for (var i = 0; i < posts.length; i++) {
+
+      if (posts[i].data.link_flair_text === "Commercial Game") {
+        //Checking if the data is already in the database
         if (
-          findResult.some((item) => item.dataId.includes(hasData[i].data.id))
+          findResult.some((item) => item.dataId.includes(posts[i].data.id))
         ) {
-          break;
-        } else {
-          console.log(`Eklendi: ${hasData[i].data.title}`);
+        }
+        //If the data is not in the database, adding it
+        else {
+          client.channels.cache
+            .get("373764394385014786")
+            .send(
+              `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url}`
+            );
           await Mongo.dbo.collection("FetchedGames").insertMany([
             {
-              dataId: [hasData[i].data.id],
-              dataName: [hasData[i].data.title],
+              dataId: [posts[i].data.id],
+              dataName: [posts[i].data.title],
               dataDate: [date.toLocaleDateString()],
             },
           ]);
-          client.channels.cache
-            .get("373764394385014786") //971813922418073600  ,,  373764394385014786
-            .send(
-              `@everyone ${hasData[i].data.title}  \n ${hasData[i].data.url}`
-            );
+          console.log(`Eklendi: ${posts[i].data.title} (Free/100% Off)`);
         }
       }
     }
@@ -65,4 +69,4 @@ async function getPosts(client) {
 
   await Mongo.mongoClient.close();
 }
-module.exports = { getPosts, setInterval };
+module.exports = { getPosts };

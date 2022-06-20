@@ -11,9 +11,7 @@ module.exports = {
     const body = await resp.json();
     const allowed = message.channel.nsfw
       ? body.data.children.filter((child) => child.data.media === null)
-      : body.data.children.filter(
-          (child) => !child.data.over_18 && child.data.media === null
-        );
+      : body.data.children.filter((child) => !child.data.over_18 && child.data.media === null);
     if (!allowed.length) {
       return message.channel.send(
         "It seems we are out of fresh memes!, Try again later."
@@ -26,7 +24,6 @@ module.exports = {
       .setTitle(post.title)
       .setImage(post.url.replace(".gifv", ".gif"))
       .setFooter({ text: `r/${args[0]}` });
-    console.log(post);
     message.channel.send({ embeds: [embed] });
   },
 };

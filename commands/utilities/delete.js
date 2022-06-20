@@ -20,7 +20,7 @@ module.exports = {
 
     message.channel
       .bulkDelete(deleteCount + 1)
-      .then((message) => {
+      .then(() => {
         message.channel.send(`${args[0]} message deleted`);
       })
       .catch((error) =>

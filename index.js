@@ -1,5 +1,5 @@
 require("dotenv").config();
-var getGames = require("./src/fetchGames.js");
+const { getPosts } = require("./src/fetchGames");
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
 const client = new Client({
@@ -8,6 +8,7 @@ const client = new Client({
     Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_VOICE_STATES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ],
 }); //
 const fs = require("fs");
@@ -19,7 +20,6 @@ client.config = require("./src/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
 client.commands = new Collection();
-client.prefix = PREFIX;
 
 // LOADING ALL FILES UNDER THE COMMANDS
 const folders = fs.readdirSync("./commands/");
@@ -30,11 +30,7 @@ for (var i = 0; i < folders.length; i++) {
       .readdirSync(`./commands/${altFolders[j]}`)
       .filter((file) => file.endsWith(".js"));
     for (const file of commandFiles) {
-      const command = require(path.join(
-        __dirname,
-        `./commands/${altFolders[j]}`,
-        file
-      ));
+      const command = require(path.join(__dirname, `./commands/${altFolders[j]}`, file));
       client.commands.set(command.name, command);
     }
   }
@@ -44,8 +40,8 @@ for (var i = 0; i < folders.length; i++) {
 client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
-
-  getGames.getPosts(client);
+  getPosts(client)
+  setInterval(getPosts, 1000 * 60 * 20, client);
 });
 
 client.once("shardReconnecting", () => {
@@ -68,14 +64,14 @@ client.on("guildMemberAdd", (member) => {
       .get("617071160957337638")
       .send("**" + member.user.username + "** , joined");
     member.roles.add(role);
-  } catch (err) {}
+  } catch (err) { }
 });
 client.on("guildMemberRemove", (member) => {
   try {
     member.guild.channels.cache
       .get("617071160957337638")
       .send("**" + member.user.username + "**, left");
-  } catch (err) {}
+  } catch (err) { }
 });
 
 //MUSIC PLAYER EVENTS
@@ -113,8 +109,7 @@ player.on("queueEnd", (queue) => {
 
 //WHEN SOMEONE MESSAGE
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
-  if (!message.guild) return;
+  if (message.author.bot || !message.guild) return;
   if (message.content.startsWith(PREFIX)) {
     //IF MESSAGE STARTS WITH BOT PREFIX
 
@@ -130,7 +125,7 @@ client.on("messageCreate", async (message) => {
       client.commands.get(command).execute(client, message, args);
     } catch (err) {
       console.log(err);
-      message.reply("Can't find a command.");
+      message.reply({ content: "Can't find a command." });
     }
   }
 });
