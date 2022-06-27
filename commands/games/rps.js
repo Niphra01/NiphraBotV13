@@ -1,6 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 module.exports = {
     name: "rps",
+    aliases: 'rps',
     description: "Rock Paper Scissors",
     async execute(client, message, args) {
         const reactions = ["rock", "paper", "scissors"];

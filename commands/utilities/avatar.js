@@ -3,7 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: "avatar",
   aliases: "avatar",
-  description: "Shows the mentioned user's avatar",
+  description: "Shows mentioned user's avatar",
   async execute(client, message, args) {
     let user;
     if (message.mentions.users.first()) {

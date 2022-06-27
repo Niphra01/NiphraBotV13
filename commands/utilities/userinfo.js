@@ -3,7 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: "userinfo",
   aliases: ":page_facing_up: userinfo",
-  description: "Shows the mentioned user's info",
+  description: "Shows mentioned user's info",
   async execute(client, message) {
     let user, member;
     if (message.mentions.users.first()) {

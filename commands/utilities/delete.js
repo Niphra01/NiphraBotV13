@@ -1,7 +1,7 @@
 module.exports = {
   name: "delete",
   aliases: ":recycle: delete",
-  description: "Deletes the messages",
+  description: "Deletes messages",
   async execute(client, message, args) {
     if (!message.member.permissions.has("MANAGE_MESSAGES"))
       return message.reply("You don't have this permission!");

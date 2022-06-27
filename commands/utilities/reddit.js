@@ -3,6 +3,8 @@ const nodeFetch = require("node-fetch");
 require("dotenv").config();
 module.exports = {
   name: "reddit",
+  aliases: 'reddit',
+  description: 'Getting random image from reddit',
   async execute(client, message, args) {
     const targetURL = `https://reddit.com/r/${args[0]}/new/.json?limit=100`;
     const resp = await nodeFetch(targetURL, {

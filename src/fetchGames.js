@@ -1,5 +1,6 @@
-var Mongo = require("./dbServer");
+require("dotenv").config();
 
+const Mongo = require("./dbServer");
 const nodeFetch = require("node-fetch");
 const date = new Date();
 

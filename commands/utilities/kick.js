@@ -1,7 +1,7 @@
 module.exports = {
   name: "kick",
   aliases: "kick",
-  description: "Kicks the user",
+  description: "Kicks users",
   async execute(client, message) {
     if (!message.member.permissions.has("KICK_MEMBERS"))
       return message.reply("You don't have this permission!");

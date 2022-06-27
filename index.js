@@ -13,9 +13,11 @@ const client = new Client({
 }); //
 const fs = require("fs");
 const path = require("path");
+const Mongo = require('./src/dbServer')
 
 //DEFINING
-const PREFIX = process.env.PREFIX;
+
+
 client.config = require("./src/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
@@ -57,7 +59,7 @@ client.on("error", console.error);
 
 client.on("guildMemberAdd", (member) => {
   try {
-    var role = member.guild.roles.cache.find(
+    let role = member.guild.roles.cache.find(
       (role) => role.name === "Yeni Üye"
     );
     member.guild.channels.cache
@@ -109,6 +111,20 @@ player.on("queueEnd", (queue) => {
 
 //WHEN SOMEONE MESSAGE
 client.on("messageCreate", async (message) => {
+
+  await Mongo.mongoClient.connect()
+  const gPrefix = await Mongo.dbo
+    .collection("BotEnv").distinct("GuildPrefix", { GuildID: message.guild.id });
+  await Mongo.mongoClient.close()
+  let PREFIX;
+  if (gPrefix.length === 0) {
+    PREFIX = process.env.PREFIX
+  }
+  else {
+    PREFIX = gPrefix;
+  }
+
+
   if (message.author.bot || !message.guild) return;
   if (message.content.startsWith(PREFIX)) {
     //IF MESSAGE STARTS WITH BOT PREFIX
@@ -127,6 +143,8 @@ client.on("messageCreate", async (message) => {
       console.log(err);
       message.reply({ content: "Can't find a command." });
     }
+  } else if (message.content.toLowerCase().startsWith('prefix')) {
+    message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
   }
 });
 
