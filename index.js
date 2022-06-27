@@ -10,14 +10,13 @@ const client = new Client({
     Intents.FLAGS.GUILD_VOICE_STATES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ],
-}); //
+});
 const fs = require("fs");
 const path = require("path");
 const Mongo = require('./src/dbServer')
+require('./src/htmlServer')
 
 //DEFINING
-
-
 client.config = require("./src/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
@@ -26,13 +25,13 @@ client.commands = new Collection();
 // LOADING ALL FILES UNDER THE COMMANDS
 const folders = fs.readdirSync("./commands/");
 for (var i = 0; i < folders.length; i++) {
-  const altFolders = folders[i].split(", ");
-  for (var j = 0; j < altFolders.length; j++) {
+  const subFolders = folders[i].split(", ");
+  for (var j = 0; j < subFolders.length; j++) {
     const commandFiles = fs
-      .readdirSync(`./commands/${altFolders[j]}`)
+      .readdirSync(`./commands/${subFolders[j]}`)
       .filter((file) => file.endsWith(".js"));
     for (const file of commandFiles) {
-      const command = require(path.join(__dirname, `./commands/${altFolders[j]}`, file));
+      const command = require(path.join(__dirname, `./commands/${subFolders[j]}`, file));
       client.commands.set(command.name, command);
     }
   }
@@ -43,7 +42,7 @@ client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
   getPosts(client)
-  setInterval(getPosts, 1000 * 60 * 20, client);
+  setInterval(getPosts, 1000 * 60 * 60, client);
 });
 
 client.once("shardReconnecting", () => {
@@ -143,7 +142,7 @@ client.on("messageCreate", async (message) => {
       console.log(err);
       message.reply({ content: "Can't find a command." });
     }
-  } else if (message.content.toLowerCase().startsWith('prefix')) {
+  } else if (message.content.toLowerCase().startsWith('prefix') || message.content.startsWith(process.env.PREFIX)) {
     message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
   }
 });
