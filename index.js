@@ -1,3 +1,4 @@
+//require('./src/htmlServer')
 require("dotenv").config();
 const { getPosts } = require("./src/fetchGames");
 const { Player } = require("discord-player");
@@ -14,7 +15,7 @@ const client = new Client({
 const fs = require("fs");
 const path = require("path");
 const Mongo = require('./src/dbServer')
-require('./src/htmlServer')
+
 
 //DEFINING
 client.config = require("./src/MusicConfig");
@@ -110,41 +111,39 @@ player.on("queueEnd", (queue) => {
 
 //WHEN SOMEONE MESSAGE
 client.on("messageCreate", async (message) => {
-
-  await Mongo.mongoClient.connect()
-  const gPrefix = await Mongo.dbo
-    .collection("BotEnv").distinct("GuildPrefix", { GuildID: message.guild.id });
-  await Mongo.mongoClient.close()
-  let PREFIX;
-  if (gPrefix.length === 0) {
-    PREFIX = process.env.PREFIX
-  }
-  else {
-    PREFIX = gPrefix;
-  }
-
-
   if (message.author.bot || !message.guild) return;
-  if (message.content.startsWith(PREFIX)) {
-    //IF MESSAGE STARTS WITH BOT PREFIX
 
-    const args = message.content.slice(PREFIX.length).trim().split(/ +/); //removing prefix from args
-    const command = args.shift().toLowerCase();
-
-    if (!client.commands.has(command)) {
-      return;
-    }
-
-    //IF COMMAND EXISTS
-    try {
-      client.commands.get(command).execute(client, message, args);
-    } catch (err) {
-      console.log(err);
-      message.reply({ content: "Can't find a command." });
-    }
-  } else if (message.content.toLowerCase().startsWith('prefix') || message.content.startsWith(process.env.PREFIX)) {
-    message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
+  const isCommand = message.content.slice(1).trim().split(/ +/).shift().toLowerCase();//REMOVING PREFIX FROM ARGS
+  let PREFIX;
+  if (!client.commands.has(isCommand)) {//IF BOT DOESN'T HAVE THIS COMMAND
+    return;
   }
+  else if (message.content.includes(isCommand)) { //IF MESSAGE HAS COMMAND IN IT 
+    await Mongo.mongoClient.connect()
+    const gPrefix = await Mongo.dbo
+      .collection("BotEnv").distinct("GuildPrefix", { GuildID: message.guild.id });
+    await Mongo.mongoClient.close()
+    if (gPrefix.length === 0) {
+      PREFIX = process.env.PREFIX
+    }
+    else {
+      PREFIX = gPrefix;
+    }
+    if (message.content.startsWith(PREFIX)) { //IF MESSAGE STARTS WITH BOT PREFIX
+      const args = message.content.slice(PREFIX.length).trim().split(/ +/); //REMOVING PREFIX FROM ARGS
+      const command = args.shift().toLowerCase(); //REMOVING FIRST ELEMENT FROM ARGS AND ADDING TO COMMAND VARIABLE
+      try {
+        client.commands.get(command).execute(client, message, args);
+      } catch (err) {
+        console.log(err);
+        message.reply({ content: "Can't find a command." });
+      }
+    }
+    else if (message.content.includes(isCommand)) {
+      message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
+    }
+  }
+
 });
 
 client.login(process.env.TOKEN);

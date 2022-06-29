@@ -62,7 +62,7 @@ async function getPosts(client) {
               dataDate: [date.toLocaleDateString()],
             },
           ]);
-          console.log(`Eklendi: ${posts[i].data.title} (Free/100% Off)`);
+          console.log(`Added: ${posts[i].data.title} (Free/100% Off)`);
         }
       }
     }

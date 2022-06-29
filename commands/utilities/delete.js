@@ -13,18 +13,19 @@ module.exports = {
     if (
       !deleteCount ||
       deleteCount < 1 ||
-      deleteCount > 100 ||
-      isNaN(deleteCount)
+      deleteCount > 100
     )
       return;
 
     message.channel
       .bulkDelete(deleteCount + 1)
       .then(() => {
-        message.channel.send(`${args[0]} message deleted`);
+        message.channel.send(`${args[0]} message deleted`).then(message => message.delete({ timeout: 5000 }));
       })
       .catch((error) =>
         console.log(`Couldn't delete messages because of: ${error}`)
       );
   },
 };
+
+
