@@ -1,6 +1,7 @@
 //require('./src/htmlServer')
 require("dotenv").config();
-const { getPosts } = require("./src/fetchGames");
+const { getPosts } = require("./src/FetchGames");
+const { news } = require("./src/GetNews")
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
 const client = new Client({
@@ -42,8 +43,10 @@ for (var i = 0; i < folders.length; i++) {
 client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
-  getPosts(client)
-  setInterval(getPosts, 1000 * 60 * 60, client);
+  setInterval(function () {
+    news();
+    getPosts();
+  }, 1000 * 60 * 60, client);
 });
 
 client.once("shardReconnecting", () => {
