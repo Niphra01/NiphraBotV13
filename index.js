@@ -44,7 +44,7 @@ client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
   setInterval(function () {
-   // news(client);
+    news(client);
     getPosts(client);
   }, 1000 * 60 * 60);
 });
