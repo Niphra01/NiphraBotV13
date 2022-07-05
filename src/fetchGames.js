@@ -41,7 +41,7 @@ async function getPosts(client) {
     }
     else if (findResult.length === 0) {//Checking collection has data in it
       for (var i = 0; i < posts.length; i++) {
-        if (dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
+        if (!dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
           try {
             await Mongo.dbo.collection("FetchedGames").insertMany([
               {
@@ -60,7 +60,7 @@ async function getPosts(client) {
     } else {
 
       for (var i = 0; i < posts.length; i++) {
-        if (dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
+        if (!dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
           //Checking if the data is already in the database
           if (findResult.some((item) => item.dataId.includes(posts[i].data.id))) { }
           //If the data is not in the database, adding it
