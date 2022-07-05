@@ -32,8 +32,8 @@ async function getPosts(client) {
     const freegamesChannel = await cGuild.channels.fetch().then(channel => channel.find(c => c.name === "freegames"))
     if (freegamesChannel === undefined) {
       cGuild.channels.create("freegames", {
-        type: "GUILD_TEXT", // syntax has changed a bit
-        permissionOverwrites: [{ // same as before
+        type: "GUILD_TEXT",
+        permissionOverwrites: [{
           id: cGuild.id,
           allow: ["VIEW_CHANNEL"],
         }]
