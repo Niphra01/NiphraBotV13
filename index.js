@@ -44,9 +44,9 @@ client.once("ready", () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud");
   setInterval(function () {
-    news();
-    getPosts();
-  }, 1000 * 60 * 60, client);
+   // news(client);
+    getPosts(client);
+  }, 1000 * 60 * 60);
 });
 
 client.once("shardReconnecting", () => {

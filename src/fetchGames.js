@@ -13,6 +13,7 @@ async function getPosts(client) {
     .toArray();
 
   const conditions = ["store.steampowered", "store.epicgames", "gog.com", "ubisoft", "origin"]
+  const dataFlair = ['My Game', 'Free to Play']
   //Getting posts from the freegames subreddit
   const targetURL = "https://reddit.com/r/freegames/new/.json?limit=15";
   const resp = await nodeFetch(targetURL, {
@@ -40,7 +41,7 @@ async function getPosts(client) {
     }
     else if (findResult.length === 0) {//Checking collection has data in it
       for (var i = 0; i < posts.length; i++) {
-        if (posts[i].data.link_flair_text !== "My Game" && conditions.some(c => posts[i].data.url.includes(c))) {
+        if (dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
           try {
             await Mongo.dbo.collection("FetchedGames").insertMany([
               {
@@ -59,7 +60,7 @@ async function getPosts(client) {
     } else {
 
       for (var i = 0; i < posts.length; i++) {
-        if (posts[i].data.link_flair_text !== "My Game" && conditions.some(c => posts[i].data.url.includes(c))) {
+        if (dataFlair.some(el => posts[i].data.link_flair_text.includes(el)) && conditions.some(c => posts[i].data.url.includes(c))) {
           //Checking if the data is already in the database
           if (findResult.some((item) => item.dataId.includes(posts[i].data.id))) { }
           //If the data is not in the database, adding it

@@ -82,9 +82,8 @@ async function news(client) {
                     }
 
                 }
-
+                await Mongo.mongoClient.close();
             });
-
         });
     });
     req.end();
