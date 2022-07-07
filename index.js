@@ -42,7 +42,7 @@ for (var i = 0; i < folders.length; i++) {
 //CLIENT EVENTS
 client.once("ready", () => {
   console.log("Bot Ready");
-  client.user.setActivity("Git Gud | -help", { type: 'WATHCING' });
+  client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
   setInterval(function () {
     //news(client);
     getPosts(client);
