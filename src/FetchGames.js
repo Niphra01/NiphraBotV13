@@ -12,7 +12,7 @@ async function getPosts(client) {
     .find({})
     .toArray();
 
-  const conditions = ["store.steampowered", "store.epicgames", "gog.com", "ubisoft", "origin"]
+  const conditions = ["store.steampowered", "store.epicgames", "gog.com", "store.ubi", "origin.com", "ea.com", "xbox.com"]
   const dataFlair = ['My Game', 'Free to Play']
   //Getting posts from the freegames subreddit
   const targetURL = "https://reddit.com/r/freegames/new/.json?limit=15";
@@ -43,6 +43,10 @@ async function getPosts(client) {
       for (var i = 0; i < posts.length; i++) {
         if (!dataFlair.some(el => posts[i].data.link_flair_text?.includes(el) || false) && conditions.some(c => posts[i].data.url.includes(c))) {
           try {
+            freegamesChannel
+              .send(
+                `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
+              );
             await Mongo.dbo.collection("FetchedGames").insertMany([
               {
                 dataId: [posts[i].data.id],
@@ -51,10 +55,7 @@ async function getPosts(client) {
               },
             ]);
           } catch (err) { }
-          freegamesChannel
-            .send(
-              `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
-            );
+
         }
       }
     } else {
@@ -77,8 +78,9 @@ async function getPosts(client) {
                   dataDate: [date.toLocaleDateString()],
                 },
               ]);
+              console.log(`Added: ${cGuild.name} - ${posts[i].data.title} (Free/100% Off)`);
             } catch (err) { }
-            console.log(`Added: ${cGuild.name} - ${posts[i].data.title} (Free/100% Off)`);
+
           }
         }
       }
