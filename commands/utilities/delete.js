@@ -1,6 +1,6 @@
 module.exports = {
   name: "delete",
-  aliases: ":recycle: delete",
+  aliases: "delete",
   description: "Deletes messages",
   async execute(client, message, args) {
     if (!message.member.permissions.has("MANAGE_MESSAGES"))

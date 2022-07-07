@@ -2,7 +2,7 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   name: "userinfo",
-  aliases: ":page_facing_up: userinfo",
+  aliases: "userinfo",
   description: "Shows mentioned user's info",
   async execute(client, message) {
     let user, member;

@@ -3,10 +3,9 @@ const Mongo = require('../../src/dbServer')
 require("dotenv").config();
 module.exports = {
   name: "help",
-  aliases: ":page_facing_up: help",
+  aliases: "help",
   description: "Info about commands",
   async execute(client, message) {
-
     await Mongo.mongoClient.connect()
     const gPrefix = await Mongo.dbo
       .collection("BotEnv").distinct("GuildPrefix", { GuildID: message.guild.id });
@@ -21,16 +20,16 @@ module.exports = {
 
     const helpEmbed = new MessageEmbed()
       .setTitle("Commands")
-      .setDescription(`PREFIX: ${PREFIX}`)
+      .setDescription(`GUILD PREFIX: **${PREFIX}**`)
       .setFooter({ text: `Example ${PREFIX}userinfo @user` });
     message.client.commands.each((cmd) => {
       helpEmbed.addField(
-        `**${cmd.aliases ? `[${cmd.aliases}]` : ""}**`,
+        `**${cmd.aliases ? `${PREFIX}${cmd.aliases.toUpperCase()}` : `${PREFIX}${cmd.name.toUpperCase()}`}**`,
         `${cmd.description}`,
-        true
+        false
       );
     });
     helpEmbed.setTimestamp();
-    message.channel.send({ embeds: [helpEmbed] });
+    message.author.send({ embeds: [helpEmbed] }).catch(err => message.channel.send(`Cannot send DM to you either blocked me or DM's off`));
   },
 };

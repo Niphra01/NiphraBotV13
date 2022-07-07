@@ -15,7 +15,7 @@ const client = new Client({
 });
 const fs = require("fs");
 const path = require("path");
-const Mongo = require('./src/dbServer')
+const Mongo = require('./src/dbServer');
 
 
 //DEFINING
@@ -42,7 +42,7 @@ for (var i = 0; i < folders.length; i++) {
 //CLIENT EVENTS
 client.once("ready", () => {
   console.log("Bot Ready");
-  client.user.setActivity("Git Gud");
+  client.user.setActivity("Git Gud | -help", { type: 'WATHCING' });
   setInterval(function () {
     //news(client);
     getPosts(client);

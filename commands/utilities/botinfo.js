@@ -2,7 +2,7 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   name: "botinfo",
-  aliases: ":page_facing_up: botinfo",
+  aliases: "botinfo",
   description: "Shows Bot info",
   async execute(client, message) {
     let botIcon = client.user.displayAvatarURL();
