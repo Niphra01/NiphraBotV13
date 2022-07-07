@@ -37,15 +37,16 @@ async function news(client) {
             let body = Buffer.concat(chunks);
             const data = JSON.parse(body.toString())
             data.result.forEach(async (item) => {
+                const newsEmbed = new MessageEmbed()
+                    .setTitle(`${item.name}`)
+                    .setDescription(`${item.description}`)
+                    .setURL(item.url)
+                    .setImage(item.image)
+                    .addField("**Tarih**", `${date.toLocaleDateString()}`, true)
+                    .addField("**Gazete**", `${item.source}`, true)
+
                 await Mongo.mongoClient.connect();
                 if (findResult.length === 0) {
-                    const newsEmbed = new MessageEmbed()
-                        .setTitle(`${item.name}`)
-                        .setDescription(`${item.description}`)
-                        .setURL(item.url)
-                        .setImage(item.image)
-                        .addField("**Tarih**", `${date.toLocaleDateString()}`, true)
-                        .addField("**Gazete**", `${item.source}`, true)
                     client.channels.cache.get("992431216152285264").send({ embeds: [newsEmbed] })
                     try {
                         await Mongo.dbo.collection("News").insertMany([
@@ -61,13 +62,6 @@ async function news(client) {
                 else {
                     if (findResult.some((data) => data.dataURL.includes(item.url))) { }
                     else {
-                        const newsEmbed = new MessageEmbed()
-                            .setTitle(`${item.name}`)
-                            .setDescription(`${item.description}`)
-                            .setURL(item.url)
-                            .setImage(item.image)
-                            .addField("**Tarih**", `${date.toLocaleDateString()}`, true)
-                            .addField("**Gazete**", `${item.source}`, true)
                         client.channels.cache.get("992431216152285264").send({ embeds: [newsEmbed] })
                         try {
                             await Mongo.dbo.collection("News").insertMany([
