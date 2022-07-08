@@ -42,8 +42,8 @@ for (var i = 0; i < folders.length; i++) {
 //CLIENT EVENTS
 client.once("ready", () => {
   console.log("Bot Ready");
-  client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
   setInterval(function () {
+    client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
     //news(client);
     getPosts(client);
   }, 1000 * 60 * 60);
