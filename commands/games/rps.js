@@ -13,7 +13,7 @@ module.exports = {
 
 
 
-        const rpsR = await message.channel.send({ embeds: [embed] })
+        const rpsR = await message.reply({ embeds: [embed] })
 
         await rpsR.react('🗻');
         await rpsR.react('📄');
@@ -32,40 +32,40 @@ module.exports = {
             switch (emoji) {
                 case '🗻':
                     if (botChoice === "rock") {
-                        message.channel.send("It's a tie!");
+                        message.reply("It's a tie!");
                     } else if (botChoice === "paper") {
-                        message.channel.send("I win!");
+                        message.reply("I win!");
                     } else {
-                        message.channel.send("You win!");
+                        message.reply("You win!");
                     }
                     break;
                 case '📄':
                     if (botChoice === "paper") {
-                        message.channel.send("It's a tie!");
+                        message.reply("It's a tie!");
                     } else if (botChoice === "scissors") {
-                        message.channel.send("I win!");
+                        message.reply("I win!");
                     } else {
-                        message.channel.send("You win!");
+                        message.reply("You win!");
                     }
                     break;
                 case '✂️':
                     if (botChoice === "scissors") {
-                        message.channel.send("It's a tie!");
+                        message.reply("It's a tie!");
                     } else if (botChoice === "rock") {
-                        message.channel.send("I win!");
+                        message.reply("I win!");
                     } else {
-                        message.channel.send("You win!");
+                        message.reply("You win!");
                     }
                     break;
                 default:
-                    message.channel.send("You didn't choose anything!");
+                    message.reply("You didn't choose anything!");
                     break;
 
 
             }
 
         }).catch(err => {
-            message.channel.send("You didn't choose anything!");
+            message.reply("You didn't choose anything!");
         }
         );
 
