@@ -77,7 +77,7 @@ module.exports = {
                 buffer = 0;
                 rowOffset += squareSize + 5;
             }
-            const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
+            const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words 2: ${blackListedWords.toString().toUpperCase()}`)
             const attachment = new MessageAttachment(canvas.toBuffer(), 'wordle.png');
             message.reply({ embeds: [BlEmbed], files: [attachment] });
 
@@ -124,9 +124,13 @@ module.exports = {
                         //letter is not in word
                         else {
                             imageNumber = 3;
-                            if (blackListedWords.some(el => el.includes(value[i]))) {
-                            } else {
-                                blackListedWords.push(value[i])
+
+                            if (guesses[j] === value) {
+                                if (blackListedWords.some(el => el.includes(value[i]))) {
+                                } else {
+                                    blackListedWords.push(value[i])
+                                }
+
                             }
                         }
 
@@ -147,7 +151,7 @@ module.exports = {
                     rowOffset += squareSize + 5;
 
                 }
-                const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
+                const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words 2: ${blackListedWords.toString().toUpperCase()}`)
                 const attachment2 = new MessageAttachment(canvas.toBuffer(), 'wordle.png');
                 await message.reply({ embeds: [BlEmbed], files: [attachment2] });
 
