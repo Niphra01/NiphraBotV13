@@ -77,12 +77,12 @@ module.exports = {
                 buffer = 0;
                 rowOffset += squareSize + 5;
             }
-            const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words 2: ${blackListedWords.toString().toUpperCase()}`)
+            const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
             const attachment = new MessageAttachment(canvas.toBuffer(), 'wordle.png');
             message.reply({ embeds: [BlEmbed], files: [attachment] });
 
             const filter = (m) => (m.author.id === message.author.id);
-            const collector = message.channel.createMessageCollector({ filter, time: 300000 });
+            const collector = message.channel.createMessageCollector({ filter, time: 150000 });
             collector.on('collect', async collected => {
 
                 let value = collected.content
@@ -151,16 +151,16 @@ module.exports = {
                     rowOffset += squareSize + 5;
 
                 }
-                const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words 2: ${blackListedWords.toString().toUpperCase()}`)
+                const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
                 const attachment2 = new MessageAttachment(canvas.toBuffer(), 'wordle.png');
                 await message.reply({ embeds: [BlEmbed], files: [attachment2] });
 
                 if (value === randomWord) {
-                    message.reply({ content: 'You won' })
+                    message.reply({ content: 'You guess the word. Congrats ' })
                     collector.stop()
                 }
                 else if (guesses.length === 6) {
-                    message.reply({ content: `You lost. The word was: ${randomWord}` })
+                    message.reply({ content: `You didn't find the word. The word was: ${randomWord}` })
                     collector.stop()
                 }
             });
