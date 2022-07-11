@@ -161,19 +161,22 @@ module.exports = {
                     await message.reply({ embeds: [BlEmbed], files: [attachment2] });
 
                     if (value === randomWord) {
-                        message.reply({ content: 'You guess the word. Congrats ' })
+                        const ResEmbed = new MessageEmbed().setTitle(`You guess the word. Congrats.`)
+                        message.reply({ embeds: [ResEmbed] })
                         user.splice(user.indexOf(message.author.id), 1)
                         collector.stop()
                     }
                     else if (guesses.length === 6) {
-                        message.reply({ content: `You didn't find the word. The word was: ${randomWord}` })
+                        const ResEmbed = new MessageEmbed().setTitle(`You didn't find the word. The word was: ${randomWord}`)
+                        message.reply({ embeds: [ResEmbed] })
                         user.splice(user.indexOf(message.author.id), 1)
                         collector.stop()
                     }
                 });
                 collector.on('end', (reason) => {
                     if (reason === "time") {
-                        message.reply({ content: `You didn't guess at time. The word was: ${randomWord}` })
+                        const ResEmbed = new MessageEmbed().setTitle(`You didn't guess at time. The word was: ${randomWord}`)
+                        message.reply({ embeds: [ResEmbed] })
                         user.splice(user.indexOf(message.author.id), 1)
                     }
                 });
