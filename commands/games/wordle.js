@@ -8,26 +8,26 @@ module.exports = {
     async execute(client, message, args) {
         const alphabetEN = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "y", "z"]
         const alphabetTR = ["a", "b", "c", "ç", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "y", "z"]
-        let randomWord, randomLetter, blackListedWords = [], guesses = [], tempWord = []
+        let randomWord, randomLetter, blackListedWords = [], guesses = []
 
         if (args[0] === undefined || args[0].length != 2) {
             return message.reply({ content: "Type your language first `tr`,`en`" })
         } else {
 
-            if (args[0] === "tr") {
-                randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
-                randomWord = words.tr[randomLetter][Math.floor(Math.random() * words.tr[randomLetter].length)]
-            }
-            else if (args[0] === "en") {
-                randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
-                randomWord = words.en[randomLetter][Math.floor(Math.random() * words.en[randomLetter].length)]
-            }
+
 
             if (user.some(u => u === message.author.id)) {
                 message.reply({ content: `You already started the game give your answer without -wordle` })
             } else {
 
-                console.log(user)
+                if (args[0] === "tr") {
+                    randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
+                    randomWord = words.tr[randomLetter][Math.floor(Math.random() * words.tr[randomLetter].length)]
+                }
+                else if (args[0] === "en") {
+                    randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
+                    randomWord = words.en[randomLetter][Math.floor(Math.random() * words.en[randomLetter].length)]
+                }
                 console.log(randomWord)
 
                 user.push(message.author.id)
@@ -78,7 +78,7 @@ module.exports = {
                     else {
                         guesses.push(value);
                     }
-
+                    console.log(user)
                     const canvas = Canvas.createCanvas(330, 397);
                     const context = canvas.getContext('2d');
 
@@ -149,21 +149,21 @@ module.exports = {
                     if (value === randomWord) {
                         const ResEmbed = new MessageEmbed().setTitle(`You guess the word. Congrats.`)
                         message.reply({ embeds: [ResEmbed] })
-                        user.splice(user.indexOf(message.author.id), 1)
+                        await user.splice(user.indexOf(message.author.id), 1)
                         collector.stop()
                     }
                     else if (guesses.length === 6) {
                         const ResEmbed = new MessageEmbed().setTitle(`You didn't find the word. The word was: ${randomWord}`)
                         message.reply({ embeds: [ResEmbed] })
-                        user.splice(user.indexOf(message.author.id), 1)
+                        await user.splice(user.indexOf(message.author.id), 1)
                         collector.stop()
                     }
                 });
-                collector.on('end', (reason) => {
+                collector.on('end', async (reason) => {
                     if (reason === "time") {
                         const ResEmbed = new MessageEmbed().setTitle(`You didn't guess at time. The word was: ${randomWord}`)
                         message.reply({ embeds: [ResEmbed] })
-                        user.splice(user.indexOf(message.author.id), 1)
+                        await user.splice(user.indexOf(message.author.id), 1)
                     }
                 });
             }
