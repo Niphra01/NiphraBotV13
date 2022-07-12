@@ -163,8 +163,13 @@ module.exports = {
                     if (reason === "time") {
                         const ResEmbed = new MessageEmbed().setTitle(`You didn't guess at time. The word was: ${randomWord}`)
                         message.reply({ embeds: [ResEmbed] })
-                        await user.splice(user.indexOf(message.author.id), 1)
                     }
+                    try {
+                        await user.splice(user.indexOf(message.author.id), 1)
+                    } catch (err) {
+                        console.log("User already removed")
+                    }
+
                 });
             }
         }
