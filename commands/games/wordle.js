@@ -67,7 +67,7 @@ module.exports = {
                 message.reply({ embeds: [BlEmbed], files: [attachment] });
 
                 const filter = (m) => (m.author.id === message.author.id);
-                const collector = message.channel.createMessageCollector({ filter, time: 150000 });
+                const collector = message.channel.createMessageCollector({ filter, time: 600000 });
                 collector.on('collect', async collected => {
 
                     let value = collected.content
