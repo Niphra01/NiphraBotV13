@@ -115,7 +115,6 @@ module.exports = {
 
                     for (var j = 0; j < 6; j++) {
                         tempWord = randomWord.split("")
-                        let isTempWord
                         for (var i = 0; i < 5; i++) {
 
                             let imageNumber
@@ -131,12 +130,21 @@ module.exports = {
                             }
 
                             //letter is in word at different spot
-                            else if (tempWord.includes(guesses[j].charAt(i))) {
-
-                                tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
-                                imageNumber = 2;
-                                //console.log(j + "     " + i + "       " + tempWord)
+                            else if (tempWord.filter(x => x.includes(guesses[j].charAt(i))).length < 2 && tempWord.includes(guesses[j].charAt(i))) {
+                                var total = 0;
+                                for (var x = 0; x < 5; x++) {
+                                    if (guesses[j].charAt(x) == tempWord[x] && guesses[j].charAt(i) == tempWord[x]) {
+                                        total += 1 //1 tane zaten bulunmuş
+                                    }
+                                }
+                                imageNumber = total > 0 ? 3 : 2;
                             }
+
+                            else if (tempWord.filter(x => x.includes(guesses[j].charAt(i))).length > 1 && tempWord.includes(guesses[j].charAt(i))) {
+                                imageNumber = 2;
+                            }
+                            //console.log(j + "     " + i + "       " + tempWord)
+
                             //letter is not in word
                             else {
                                 imageNumber = 3;
@@ -164,7 +172,6 @@ module.exports = {
 
                             buffer += 5;
                         }
-                        isTempWord = false
                         tempWord = []
                         buffer = 0;
                         rowOffset += squareSize + 5;
