@@ -71,7 +71,7 @@ module.exports = {
                 const collector = message.channel.createMessageCollector({ filter, time: 300000, errors: ['time'] });
                 collector.on('collect', async collected => {
 
-                    let value = collected.content
+                    let value = collected.content.toLowerCase()
                     if (value.length != 5) { return message.reply({ content: "You need to type word with 5 letter" }) }
 
 
@@ -83,7 +83,7 @@ module.exports = {
                         })
                     })
 
-                    if (!isWord) { return message.channel.send("It's not a word in my library") }
+                    if (!isWord) { return message.channel.send(`Word **${value}** not in my library`) }
                     if (guesses == "") {
                         guesses[0] = value;
                     }
@@ -115,22 +115,27 @@ module.exports = {
 
                     for (var j = 0; j < 6; j++) {
                         tempWord = randomWord.split("")
+                        let isTempWord
                         for (var i = 0; i < 5; i++) {
 
                             let imageNumber
                             if (guesses[j] === undefined) { imageNumber = 0; }
                             //letter is in word at same spot
                             else if (guesses[j].charAt(i) == randomWord.charAt(i)) {
-                                tempWord.splice(tempWord.indexOf(i), 1)
+                                if (tempWord.includes(guesses[j].charAt(i))) {
+                                    tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
+                                }
+
                                 imageNumber = 1;
-                                console.log(tempWord + "" + i)
+                                //console.log(j + "     " + i + "       " + tempWord)
                             }
 
                             //letter is in word at different spot
                             else if (tempWord.includes(guesses[j].charAt(i))) {
+
+                                tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
                                 imageNumber = 2;
-                                tempWord.splice(tempWord.indexOf(i), 1)
-                                console.log(tempWord + "" + i)
+                                //console.log(j + "     " + i + "       " + tempWord)
                             }
                             //letter is not in word
                             else {
@@ -159,6 +164,7 @@ module.exports = {
 
                             buffer += 5;
                         }
+                        isTempWord = false
                         tempWord = []
                         buffer = 0;
                         rowOffset += squareSize + 5;
