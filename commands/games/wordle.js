@@ -8,26 +8,27 @@ module.exports = {
     async execute(client, message, args) {
         const alphabetEN = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "y", "z"]
         const alphabetTR = ["a", "b", "c", "ç", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "y", "z"]
-        let randomWord, randomLetter, blackListedWords = [], guesses = []
+        let randomWord, randomLetter, blackListedWords = [], guesses = [], lang, isWord, tempWord = []
 
-        if (args[0] === undefined || args[0].length != 2) {
-            return message.reply({ content: "Type your language first `tr`,`en`" })
+        if (args[0] === undefined || (args[1] !== undefined) || args[0].length != 2) {
+            return message.reply({ content: "Type your language, like `-wordle` `tr` or `en`" })
         } else {
-
-
-
             if (user.some(u => u === message.author.id)) {
                 message.reply({ content: `You already started the game give your answer without -wordle` })
             } else {
-
-                if (args[0] === "tr") {
+                if (!lang || lang.length === 0) {
+                    lang = args[0].toLowerCase()
+                }
+                console.log(lang)
+                if (lang === "tr") {
                     randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
-                    randomWord = words.tr[randomLetter][Math.floor(Math.random() * words.tr[randomLetter].length)]
-                }
-                else if (args[0] === "en") {
+                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
+                } else if (lang === "en") {
                     randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
-                    randomWord = words.en[randomLetter][Math.floor(Math.random() * words.en[randomLetter].length)]
+                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
                 }
+
+
                 console.log(randomWord)
 
                 user.push(message.author.id)
@@ -72,11 +73,23 @@ module.exports = {
 
                     let value = collected.content
                     if (value.length != 5) { return message.reply({ content: "You need to type word with 5 letter" }) }
+
+
+                    Object.keys(words[lang]).forEach(letter => {
+                        Object.keys(words[lang][letter]).forEach(word => {
+                            if (words[lang][letter][word].toString() === value.toString()) {
+                                return isWord = true
+                            }
+                        })
+                    })
+
+                    if (!isWord) { return message.channel.send("It's not a word in my library") }
                     if (guesses == "") {
                         guesses[0] = value;
                     }
                     else {
                         guesses.push(value);
+
                     }
                     console.log(user)
                     const canvas = Canvas.createCanvas(330, 397);
@@ -101,17 +114,23 @@ module.exports = {
                     let buffer = 0;
 
                     for (var j = 0; j < 6; j++) {
+                        tempWord = randomWord.split("")
                         for (var i = 0; i < 5; i++) {
 
                             let imageNumber
                             if (guesses[j] === undefined) { imageNumber = 0; }
                             //letter is in word at same spot
                             else if (guesses[j].charAt(i) == randomWord.charAt(i)) {
+                                tempWord.splice(tempWord.indexOf(i), 1)
                                 imageNumber = 1;
+                                console.log(tempWord + "" + i)
                             }
+
                             //letter is in word at different spot
-                            else if (randomWord.includes(guesses[j].charAt(i))) {
+                            else if (tempWord.includes(guesses[j].charAt(i))) {
                                 imageNumber = 2;
+                                tempWord.splice(tempWord.indexOf(i), 1)
+                                console.log(tempWord + "" + i)
                             }
                             //letter is not in word
                             else {
@@ -126,6 +145,8 @@ module.exports = {
                                 }
                             }
 
+
+
                             if (imageNumber == 0) { square = emptySquare; }
                             else if (imageNumber == 1) { square = greenSquare; }
                             else if (imageNumber == 2) { square = yellowSquare; }
@@ -138,13 +159,14 @@ module.exports = {
 
                             buffer += 5;
                         }
-
+                        tempWord = []
                         buffer = 0;
                         rowOffset += squareSize + 5;
                     }
                     const BlEmbed = new MessageEmbed().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
                     const attachment2 = new MessageAttachment(canvas.toBuffer(), 'wordle.png');
                     await message.reply({ embeds: [BlEmbed], files: [attachment2] });
+                    isWord = false
 
                     if (value === randomWord) {
                         const ResEmbed = new MessageEmbed().setTitle(`You guess the word. Congrats.`)
