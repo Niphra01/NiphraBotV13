@@ -21,18 +21,22 @@ module.exports = {
                 }
                 console.log(lang)
                 if (lang === "tr") {
-                    randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
-                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
-                } else if (lang === "en") {
-                    randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
-                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
+                    //randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
+                    //randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
+                }
+                else if (lang === "en") {
+                    //randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
+                    // randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
+                    randomWord = "young"
+                } else {
+                    return message.reply({ content: "Type your language, like `-wordle` `tr` or `en`" })
                 }
 
 
                 console.log(randomWord)
 
                 user.push(message.author.id)
-
+                console.log(user)
                 const canvas = Canvas.createCanvas(330, 397);
                 const context = canvas.getContext('2d');
 
@@ -91,7 +95,7 @@ module.exports = {
                         guesses.push(value);
 
                     }
-                    console.log(user)
+
                     const canvas = Canvas.createCanvas(330, 397);
                     const context = canvas.getContext('2d');
 
@@ -121,34 +125,29 @@ module.exports = {
                             if (guesses[j] === undefined) { imageNumber = 0; }
                             //letter is in word at same spot
                             else if (guesses[j].charAt(i) == randomWord.charAt(i)) {
-                                if (tempWord.includes(guesses[j].charAt(i))) {
-                                    tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
-                                }
-
                                 imageNumber = 1;
-                                //console.log(j + "     " + i + "       " + tempWord)
                             }
 
                             //letter is in word at different spot
-                            else if (tempWord.filter(x => x.includes(guesses[j].charAt(i))).length < 2 && tempWord.includes(guesses[j].charAt(i))) {
+                            else if (tempWord.filter(x => x.includes(guesses[j].charAt(i))).length === 1 && tempWord.includes(guesses[j].charAt(i))) {
                                 var total = 0;
                                 for (var x = 0; x < 5; x++) {
                                     if (guesses[j].charAt(x) == tempWord[x] && guesses[j].charAt(i) == tempWord[x]) {
                                         total += 1 //1 tane zaten bulunmuş
                                     }
                                 }
+                                tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
                                 imageNumber = total > 0 ? 3 : 2;
                             }
 
                             else if (tempWord.filter(x => x.includes(guesses[j].charAt(i))).length > 1 && tempWord.includes(guesses[j].charAt(i))) {
+                                tempWord.splice(tempWord.indexOf(guesses[j].charAt(i)), 1)
                                 imageNumber = 2;
                             }
-                            //console.log(j + "     " + i + "       " + tempWord)
 
                             //letter is not in word
                             else {
                                 imageNumber = 3;
-
                                 if (guesses[j] === value) {
                                     if (blackListedWords.some(el => el.includes(value[i]))) {
                                     } else {
@@ -184,27 +183,32 @@ module.exports = {
                     if (value === randomWord) {
                         const ResEmbed = new MessageEmbed().setTitle(`You guess the word. Congrats.`)
                         message.reply({ embeds: [ResEmbed] })
-                        await user.splice(user.indexOf(message.author.id), 1)
-                        collector.stop()
+                        collector.stop("over")
                     }
                     else if (guesses.length === 6) {
                         const ResEmbed = new MessageEmbed().setTitle(`You didn't find the word. The word was: ${randomWord}`)
                         message.reply({ embeds: [ResEmbed] })
-                        await user.splice(user.indexOf(message.author.id), 1)
-                        collector.stop()
+                        collector.stop("over")
                     }
                 });
-                collector.on('end', async (reason) => {
+                collector.on('end', async (collected, reason) => {
                     if (reason === "time") {
-                        const ResEmbed = new MessageEmbed().setTitle(`You didn't guess at time. The word was: ${randomWord}`)
+                        const ResEmbed = new MessageEmbed().setTitle(`You didn't guess the word at time. The word was: ${randomWord}`)
                         message.reply({ embeds: [ResEmbed] })
+                        try {
+                            await user.splice(user.indexOf(message.author.id), 1)
+                            console.log(user)
+                        } catch (err) {
+                            console.log("User already removed")
+                        }
+                    } else if (reason === "over") {
+                        try {
+                            await user.splice(user.indexOf(message.author.id), 1)
+                            console.log(user)
+                        } catch (err) {
+                            console.log("User already removed")
+                        }
                     }
-                    try {
-                        await user.splice(user.indexOf(message.author.id), 1)
-                    } catch (err) {
-                        console.log("User already removed")
-                    }
-
                 });
             }
         }
