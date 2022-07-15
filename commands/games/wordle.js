@@ -21,13 +21,12 @@ module.exports = {
                 }
                 console.log(lang)
                 if (lang === "tr") {
-                    //randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
-                    //randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
+                    randomLetter = alphabetTR[Math.floor(Math.random() * alphabetTR.length)]
+                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
                 }
                 else if (lang === "en") {
-                    //randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
-                    // randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
-                    randomWord = "young"
+                    randomLetter = alphabetEN[Math.floor(Math.random() * alphabetEN.length)]
+                    randomWord = words[lang][randomLetter][Math.floor(Math.random() * words[lang][randomLetter].length)]
                 } else {
                     return message.reply({ content: "Type your language, like `-wordle` `tr` or `en`" })
                 }
