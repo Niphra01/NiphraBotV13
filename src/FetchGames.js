@@ -17,7 +17,7 @@ async function getPosts(client) {
     var dt = new Date(item.dataDate)
     if (Math.floor(Math.abs(date - dt) / 1000 / 60 / 60 / 24) >= 30) {
       console.log(item.dataName)
-      await Mongo.dbo.collection('testGame').deleteOne({ dataId: item.dataId });
+      await Mongo.dbo.collection('FetchedGames').deleteOne({ dataId: item.dataId });
     }
   })
 
