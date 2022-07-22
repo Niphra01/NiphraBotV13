@@ -12,10 +12,19 @@ async function getPosts(client) {
     .find({})
     .toArray();
 
+  //deleting a document if document has been in db more than 29 days
+  await findResult.forEach(async item => {
+    var dt = new Date(item.dataDate)
+    if (Math.floor(Math.abs(date - dt) / 1000 / 60 / 60 / 24) >= 30) {
+      console.log(item.dataName)
+      await Mongo.dbo.collection('testGame').deleteOne({ dataId: item.dataId });
+    }
+  })
+
   const conditions = ["store.steampowered", "store.epicgames", "gog.com", "store.ubi", "origin.com", "ea.com", "xbox.com"]
   const dataFlair = ['My Game', 'Free to Play']
   //Getting posts from the freegames subreddit
-  const targetURL = "https://reddit.com/r/freegames/new/.json?limit=15";
+  const targetURL = "https://reddit.com/r/freegames/new/.json?limit=10";
   const resp = await nodeFetch(targetURL, {
     Header: { "user-agent": process.env.USERAGENT },
   });
@@ -49,9 +58,10 @@ async function getPosts(client) {
               );
             await Mongo.dbo.collection("FetchedGames").insertMany([
               {
-                dataId: [posts[i].data.id],
-                dataName: [posts[i].data.title],
-                dataDate: [date.toLocaleDateString()],
+                dataId: posts[i].data.id,
+                dataName: posts[i].data.title,
+                dataDate: date.toLocaleDateString(),
+                dataURL: posts[i].data.url,
               },
             ]);
           } catch (err) { }
@@ -63,7 +73,7 @@ async function getPosts(client) {
       for (var i = 0; i < posts.length; i++) {
         if (!dataFlair.some(el => posts[i].data.link_flair_text?.includes(el) || false) && conditions.some(c => posts[i].data.url.includes(c))) {
           //Checking if the data is already in the database
-          if (findResult.some((item) => item.dataId.includes(posts[i].data.id))) { }
+          if (findResult.some(item => item.dataURL == posts[i].data.url)) { }
           //If the data is not in the database, adding it
           else {
             await freegamesChannel
@@ -73,9 +83,10 @@ async function getPosts(client) {
             try {
               await Mongo.dbo.collection("FetchedGames").insertMany([
                 {
-                  dataId: [posts[i].data.id],
-                  dataName: [posts[i].data.title],
-                  dataDate: [date.toLocaleDateString()],
+                  dataId: posts[i].data.id,
+                  dataName: posts[i].data.title,
+                  dataDate: date.toLocaleDateString(),
+                  dataURL: posts[i].data.url,
                 },
               ]);
               console.log(`Added: ${cGuild.name} - ${posts[i].data.title} (Free/100% Off)`);
