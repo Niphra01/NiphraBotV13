@@ -143,7 +143,9 @@ client.on("messageCreate", async (message) => {
       }
     }
     else if (message.content.includes(isCommand)) {
-      message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
+      if (gPrefix.length !== 0) {
+        message.reply({ content: `Your guild Prefix is : **${PREFIX}**` })
+      }
     }
   }
 
