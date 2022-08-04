@@ -1,6 +1,6 @@
-const { MessageActionRow, MessageButton, MessageEmbed, MessageAttachment } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const Canvas = require('canvas');
-const words = require('../../src/WordList.json')
+const words = require('../../src/configs/WordList.json')
 let user = []
 module.exports = {
     name: "wordle",

@@ -1,7 +1,7 @@
 //require('./src/htmlServer')
 require("dotenv").config();
-const { getPosts } = require("./src/FetchGames");
-const { news } = require("./src/GetNews")
+const { getGames } = require("./src/FetchGames");
+//const { news } = require("./src/GetNews")
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
 const client = new Client({
@@ -16,10 +16,11 @@ const client = new Client({
 const fs = require("fs");
 const path = require("path");
 const Mongo = require('./src/dbServer');
+const { Steam_Api } = require("./src/api/steam");
 
 
 //DEFINING
-client.config = require("./src/MusicConfig");
+client.config = require("./src/configs/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
 const player = client.player;
 client.commands = new Collection();
@@ -42,11 +43,15 @@ for (var i = 0; i < folders.length; i++) {
 //CLIENT EVENTS
 client.once("ready", () => {
   console.log("Bot Ready");
-  setInterval(function () {
+  //epicGames(client)
+  setInterval(async function () {
     client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
     //news(client);
-    getPosts(client);
-  }, 1000 * 60 * 60);
+    await getGames(client);
+  }, 1000 * 60 * 60 * 24);
+  setInterval(function () {
+    Steam_Api()
+  }, 1000 * 60 * 60 * 24 * 7)
 });
 
 client.once("shardReconnecting", () => {
@@ -115,6 +120,7 @@ player.on("queueEnd", (queue) => {
 //WHEN SOMEONE MESSAGE
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
+
 
   const isCommand = message.content.slice(1).trim().split(/ +/).shift().toLowerCase();//REMOVING PREFIX FROM ARGS
   let PREFIX;

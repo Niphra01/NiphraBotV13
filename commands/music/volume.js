@@ -1,4 +1,4 @@
-const maxVol = require("../../src/MusicConfig.js").opt.maxVol;
+const maxVol = require("../../src/configs/MusicConfig.js").opt.maxVol;
 
 module.exports = {
   name: "volume",
