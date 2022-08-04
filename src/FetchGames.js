@@ -9,7 +9,7 @@ async function getGames(client) {
   await Mongo.mongoClient.connect();
   //finding all the data to array in FetchedGames collection from database
   const findResult = await Mongo.dbo
-    .collection("testGame")
+    .collection("FetchedGames")
     .find({})
     .toArray();
 
@@ -18,7 +18,7 @@ async function getGames(client) {
     var dt = new Date(item.dataDate)
     if (Math.floor(Math.abs(date - dt) / 1000 / 60 / 60 / 24) >= 30) {
       console.log(item.dataName)
-      await Mongo.dbo.collection('testGame').deleteOne({ dataId: item.dataId });
+      await Mongo.dbo.collection('FetchedGames').deleteOne({ dataId: item.dataId });
     }
   })
 
@@ -60,7 +60,7 @@ async function getGames(client) {
                 `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
               );
             try {
-              await Mongo.dbo.collection("testGame").insertMany([
+              await Mongo.dbo.collection("FetchedGames").insertMany([
                 {
                   dataId: posts[i].data.id,
                   dataName: posts[i].data.title,
@@ -87,7 +87,7 @@ async function getGames(client) {
                 `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url}`
               );
             try {
-              await Mongo.dbo.collection("testGame").insertMany([
+              await Mongo.dbo.collection("FetchedGames").insertMany([
                 {
                   dataId: posts[i].data.id,
                   dataName: posts[i].data.title,
@@ -144,7 +144,7 @@ const steamGames = async (client, guildsID, findResult) => {
                 console.log(`Added: ${cGuild.name} - ${gameData.name} `);
                 try {
                   await Mongo.mongoClient.connect();
-                  await Mongo.dbo.collection("testGame").insertMany([
+                  await Mongo.dbo.collection("FetchedGames").insertMany([
                     {
                       dataId: gameData.steam_appid,
                       dataName: gameData.name,
