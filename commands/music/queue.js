@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "queue",
@@ -19,7 +19,7 @@ module.exports = {
         content: `${message.author}, No music in queue after current. ❌`,
       });
 
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
     const methods = ["🔁", "🔂"];
 
     embed.setColor("RED");

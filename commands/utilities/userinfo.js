@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "userinfo",
@@ -14,14 +14,26 @@ module.exports = {
 
     member = message.guild.members.cache.get(user.id);
     if (!user.bot) {
-      const embed = new MessageEmbed()
-        .setColor("RANDOM")
+      const embed = new EmbedBuilder()
+        .setColor(0x333333)
         .setThumbnail(user.displayAvatarURL())
         .setTitle(`${user.username}#${user.discriminator}`)
-        .addField("Nickname:", `${member.nickname !== null ? `${member.nickname}` : "Null"}`, true)
-        .addField("Created at:", `${user.createdAt.toLocaleString()}`, true)
-        .addField("Joined at", `${member.joinedAt.toLocaleString()}`, true)
-        .addField("Roles:", `${member.roles.cache.map((role) => role.toString()).join(", ")}`, true);
+        .addFields([
+          {
+            name: "Nickname",
+            value: `${
+              member.nickname !== null ? `${member.nickname}` : "Null"
+            }`,
+          },
+          { name: "Created at", value: `${user.createdAt.toLocaleString()}` },
+          { name: "Joined at", value: `${member.joinedAt.toLocaleString()}` },
+          {
+            name: "Roles",
+            value: `${member.roles.cache
+              .map((role) => role.toString())
+              .join(", ")}`,
+          },
+        ]);
       message.channel.send({ embeds: [embed] });
     } else {
       message.reply({ content: "User is bot" });

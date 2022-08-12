@@ -1,5 +1,5 @@
 const math = require("math-expression-evaluator");
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "calculator",
@@ -13,12 +13,13 @@ module.exports = {
     } catch (e) {
       return message.channel.send("Please Enter a valid Value!");
     }
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(0xffffff)
       .setTitle("Calculator")
-      .addField("Input", `\`\`\`js\n${args.join("")}\`\`\``)
-      .addField("Output", `\`\`\`js\n${resp}\`\`\``);
-
+      .addFields([
+        { name: "Input", value: `\`\`\`js\n${args.join("")}\`\`\`` },
+        { name: "Output", value: `\`\`\`js\n${resp}\`\`\`` },
+      ]);
     message.channel.send({ embeds: [embed] });
   },
 };

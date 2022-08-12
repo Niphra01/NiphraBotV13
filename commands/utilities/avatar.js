@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "avatar",
@@ -11,7 +11,7 @@ module.exports = {
     } else {
       return message.reply({ content: "Please mention a user!" });
     }
-    const avatarEmbed = new MessageEmbed()
+    const avatarEmbed = new EmbedBuilder()
       .setColor(0x333333)
       .setAuthor(user.username)
       .setImage(user.displayAvatarURL());

@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { QueryType } = require("discord-player");
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
       metadata: message.channel,
     });
 
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
 
     embed.setColor("BLUE");
     embed.setTitle(`Searched Music: ${args.join(" ")}`);

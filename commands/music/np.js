@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "np",
@@ -16,7 +16,7 @@ module.exports = {
 
     const track = queue.current;
 
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
 
     embed.setColor("BLUE");
     embed.setThumbnail(track.thumbnail);
