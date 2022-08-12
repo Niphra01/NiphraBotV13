@@ -1,6 +1,5 @@
-//require('./src/htmlServer')
 require("dotenv").config();
-const { getGames } = require("./src/FetchGames");
+const { getGames } = require("./src/Games");
 //const { news } = require("./src/GetNews")
 const { Player } = require("discord-player");
 const { Client, Intents, Collection } = require("discord.js");
@@ -15,7 +14,7 @@ const client = new Client({
 });
 const fs = require("fs");
 const path = require("path");
-const Mongo = require('./src/dbServer');
+const Mongo = require('./src/configs/DbConfig');
 const { Steam_Api } = require("./src/api/steam");
 
 
@@ -43,12 +42,13 @@ for (var i = 0; i < folders.length; i++) {
 //CLIENT EVENTS
 client.once("ready", () => {
   console.log("Bot Ready");
-  //epicGames(client)
+  client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
+  await getGames(client);
   setInterval(async function () {
     client.user.setActivity("Git Gud | -help", { type: 'WATCHING' });
     //news(client);
     await getGames(client);
-  }, 1000 * 60 * 60 * 24);
+  }, 1000 * 60 * 60 * 2);
   setInterval(function () {
     Steam_Api()
   }, 1000 * 60 * 60 * 24 * 7)

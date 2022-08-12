@@ -1,15 +1,16 @@
 require("dotenv").config();
 const { MessageEmbed } = require('discord.js')
 const appInfo = require('./configs/steamAppsInfo.json')
-const Mongo = require("./dbServer");
+const Mongo = require("./configs/DbConfig");
 const fetch = require('node-fetch')
 const date = new Date();
 
+
 async function getGames(client) {
   await Mongo.mongoClient.connect();
+  const coll = Mongo.dbo.collection('FetchedGames')
   //finding all the data to array in FetchedGames collection from database
-  const findResult = await Mongo.dbo
-    .collection("FetchedGames")
+  const findResult = await coll
     .find({})
     .toArray();
 
@@ -18,7 +19,7 @@ async function getGames(client) {
     var dt = new Date(item.dataDate)
     if (Math.floor(Math.abs(date - dt) / 1000 / 60 / 60 / 24) >= 30) {
       console.log(item.dataName)
-      await Mongo.dbo.collection('FetchedGames').deleteOne({ dataId: item.dataId });
+      await coll.deleteOne({ dataId: item.dataId });
     }
   })
 
@@ -60,7 +61,7 @@ async function getGames(client) {
                 `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
               );
             try {
-              await Mongo.dbo.collection("FetchedGames").insertMany([
+              await coll.insertMany([
                 {
                   dataId: posts[i].data.id,
                   dataName: posts[i].data.title,
@@ -70,7 +71,6 @@ async function getGames(client) {
               ]);
             } catch (err) { }
           }
-
         }
       }
     } else {
@@ -87,7 +87,7 @@ async function getGames(client) {
                 `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url}`
               );
             try {
-              await Mongo.dbo.collection("FetchedGames").insertMany([
+              await coll.insertMany([
                 {
                   dataId: posts[i].data.id,
                   dataName: posts[i].data.title,
@@ -144,7 +144,7 @@ const steamGames = async (client, guildsID, findResult) => {
                 console.log(`Added: ${cGuild.name} - ${gameData.name} `);
                 try {
                   await Mongo.mongoClient.connect();
-                  await Mongo.dbo.collection("FetchedGames").insertMany([
+                  await coll.insertMany([
                     {
                       dataId: gameData.steam_appid,
                       dataName: gameData.name,
