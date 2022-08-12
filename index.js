@@ -17,7 +17,6 @@ const fs = require("fs");
 const path = require("path");
 const Mongo = require("./src/configs/DbConfig");
 const { Steam_Api } = require("./src/api/steam");
-
 //DEFINING
 client.config = require("./src/configs/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
@@ -47,7 +46,6 @@ for (var i = 0; i < folders.length; i++) {
 client.once("ready", async () => {
   console.log("Bot Ready");
   client.user.setActivity("Git Gud | -help", { type: "WATCHING" });
-  await getGames(client);
   setInterval(async function () {
     client.user.setActivity("Git Gud | -help", { type: "WATCHING" });
     //news(client);
@@ -78,14 +76,14 @@ client.on("guildMemberAdd", (member) => {
       .get("617071160957337638")
       .send("**" + member.user.username + "** , joined");
     member.roles.add(role);
-  } catch (err) {}
+  } catch (err) { }
 });
 client.on("guildMemberRemove", (member) => {
   try {
     member.guild.channels.cache
       .get("617071160957337638")
       .send("**" + member.user.username + "**, left");
-  } catch (err) {}
+  } catch (err) { }
 });
 
 //MUSIC PLAYER EVENTS
@@ -154,7 +152,6 @@ client.on("messageCreate", async (message) => {
       try {
         client.commands.get(command).execute(client, message, args);
       } catch (err) {
-        console.log("gelmedi");
         console.log(err);
         message.reply({ content: "Can't find a command." });
       }
