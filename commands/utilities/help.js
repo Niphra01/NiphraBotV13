@@ -25,11 +25,10 @@ module.exports = {
     message.client.commands.each((cmd) => {
       helpEmbed.addFields([
         {
-          name: `**${
-            cmd.aliases
-              ? `${PREFIX}${cmd.aliases.toUpperCase()}`
-              : `${PREFIX}${cmd.name.toUpperCase()}`
-          }**`,
+          name: `**${cmd.aliases
+            ? `${PREFIX}${cmd.aliases.toUpperCase()}`
+            : `${PREFIX}${cmd.name.toUpperCase()}`
+            }**`,
           value: `${cmd.description}`,
         },
       ]);

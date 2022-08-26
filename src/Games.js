@@ -54,33 +54,6 @@ async function getGames(client) {
           },
         ],
       });
-    } else if (findResult.length === 0) {
-      //Checking collection has data in it
-      for (var i = 0; i < posts.length; i++) {
-        if (
-          !dataFlair.some(
-            (el) => posts[i].data.link_flair_text?.includes(el) || false
-          ) &&
-          conditions.some((c) => posts[i].data.url.includes(c))
-        ) {
-          if (findResult.some((item) => item.dataURL == posts[i].data.url)) {
-          } else {
-            await freegamesChannel.send(
-              `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url} `
-            );
-            try {
-              await coll.insertMany([
-                {
-                  dataId: posts[i].data.id,
-                  dataName: posts[i].data.title,
-                  dataDate: date.toLocaleDateString(),
-                  dataURL: posts[i].data.url,
-                },
-              ]);
-            } catch (err) { }
-          }
-        }
-      }
     } else {
       for (var i = 0; i < posts.length; i++) {
         if (
@@ -134,16 +107,17 @@ const steamGames = async (client, guildsID, findResult) => {
       const gameData = result[appInfo.applist.apps[i].appid].data;
       if (result[appInfo.applist.apps[i].appid].success == false) {
       } else {
-        if (gameData.is_free == true) {
-          if (
-            gameData.price_overview.discount_percent === 100 &&
-            gameData.price_overview.final_formatted == "Free"
-          ) {
+        if (
+          findResult.some((item) => item.dataId == gameData.steam_appid)
+        ) {
+          console.log(`Game already added to DB - ${gameData.name}`);
+        }
+        else {
+          if (gameData.is_free == true) {
             if (
-              findResult.some((item) => item.dataId == gameData.steam_appid)
+              gameData.price_overview.discount_percent === 100 &&
+              gameData.price_overview.final_formatted == "Free"
             ) {
-              console.log(`Game already added to DB - ${gameData.name}`);
-            } else {
               guildsID.forEach(async (guildID) => {
                 const cGuild = client.guilds.cache.get(guildID);
                 const freegamesChannel = await cGuild.channels
@@ -187,8 +161,9 @@ const steamGames = async (client, guildsID, findResult) => {
               });
             }
           }
-        } else if (gameData.price_overview == undefined) {
-          //console.log('Game is not released yet')
+          else if (gameData.price_overview == undefined) {
+            // 'Game is not released yet'
+          }
         }
       }
     } catch (err) { }
@@ -209,22 +184,18 @@ const epicGames = async (client, guildsID, findResult) => {
     .then((res) => res.json())
     .then((data) =>
       data.data.Catalog.searchStore.elements.forEach((el) => {
-        if (el.promotions !== null) {
-          if (el.promotions.promotionalOffers.length !== 0) {
-            if (
-              new Date(
-                el.promotions.promotionalOffers[0].promotionalOffers[0].startDate
-              ) <
-              date <
-              new Date(
-                el.promotions.promotionalOffers[0].promotionalOffers[0].endDate
-              )
-            ) {
+        if (
+          findResult.some((item) => item.dataId == el.id)
+        ) {
+          console.log(`Game already added to DB - ${el.title}`);
+        }
+        else {
+          if (el.promotions !== null) {
+            if (el.promotions.promotionalOffers.length !== 0) {
               if (
-                findResult.some((item) => item.dataId == el.id)
+                new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].startDate) < date < new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
+                && el.price.totalPrice.fmtPrice.intermediatePrice == 0
               ) {
-                console.log(`Game already added to DB - ${el.title}`);
-              } else {
                 guildsID.forEach(async (guildID) => {
                   const cGuild = client.guilds.cache.get(guildID);
                   const freegamesChannel = await cGuild.channels
@@ -238,20 +209,23 @@ const epicGames = async (client, guildsID, findResult) => {
                       gameImage = item.url
                     }
                   })
+                  try {
+                    const epicEmbed = new EmbedBuilder()
+                      .setTitle(el.title.toString())
+                      .setDescription(el.description.toString())
+                      .setImage(gameImage)
+                      .setURL(el.productSlug ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
+                        `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`
+                      )
+                      .addFields([
+                        { name: 'Price', value: `~~${el.price.totalPrice.fmtPrice.originalPrice}~~ |  Free` },
+                        { name: 'Expire Date', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleDateString()}` }
+                      ])
+                    freegamesChannel.send({ embeds: [epicEmbed] });
+                    console.log(`Added: ${cGuild.name} - ${el.title} `);
+                  }
+                  catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
 
-                  const epicEmbed = new EmbedBuilder()
-                    .setTitle(el.title.toString())
-                    .setDescription(el.description.toString())
-                    .setImage(gameImage)
-                    .setURL(
-                      `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`
-                    )
-                    .addFields([
-                      { name: 'Price', value: `~~${el.price.totalPrice.fmtPrice.originalPrice}~~ |  Free` },
-                      { name: 'Expire Date', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleDateString()}` }
-                    ])
-                  freegamesChannel.send({ embeds: [epicEmbed] });
-                  console.log(`Added: ${cGuild.name} - ${el.title} `);
                   try {
                     await Mongo.mongoClient.connect();
                     await coll.insertMany([
@@ -259,11 +233,11 @@ const epicGames = async (client, guildsID, findResult) => {
                         dataId: el.id,
                         dataName: el.title,
                         dataDate: date.toLocaleDateString(),
-                        dataURL: `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`,
+                        dataURL: el.productSlug ? `https://store.epicgames.com/en-US/p/${el.productSlug}` : `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`,
                       },
                     ]);
                     await Mongo.mongoClient.close();
-                  } catch (err) { }
+                  } catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
                 })
               }
             }
