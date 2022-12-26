@@ -16,7 +16,7 @@ const client = new Client({
 const fs = require("fs");
 const path = require("path");
 const Mongo = require("./src/configs/DbConfig");
-const { Steam_Api } = require("./src/api/steam");
+//const { Steam_Api } = require("./src/api/steam");
 //DEFINING
 client.config = require("./src/configs/MusicConfig");
 client.player = new Player(client, client.config.opt.discordPlayer);
@@ -50,14 +50,16 @@ client.once("ready", async () => {
     client.user.setActivity("Git Gud | -help", { type: "WATCHING" });
     //news(client);
     await getGames(client);
-  }, 1000 * 60 * 60 * 2);
-  setInterval(function () {
-    Steam_Api();
-  }, 1000 * 60 * 60 * 24 * 7);
+  }, 1000 * 60 * 60);
 });
 
-client.once("shardReconnecting", () => {
+client.once("shardReconnecting", async() => {
   console.log("Reconnected!");
+  setInterval(async function () {
+    client.user.setActivity("Git Gud | -help", { type: "WATCHING" });
+    //news(client);
+    await getGames(client);
+  }, 1000 * 60 * 60);
 });
 client.once("shardDisconnected", () => {
   console.log("Disconnected!");
@@ -74,7 +76,7 @@ client.on("guildMemberAdd", (member) => {
     );
     member.guild.channels.cache
       .get("617071160957337638")
-      .send("**" + member.user.username + "** , joined");
+      .send("**" + member.user + "** , joined");
     member.roles.add(role);
   } catch (err) { }
 });
@@ -82,7 +84,7 @@ client.on("guildMemberRemove", (member) => {
   try {
     member.guild.channels.cache
       .get("617071160957337638")
-      .send("**" + member.user.username + "**, left");
+      .send("**" + member.user + "**, left");
   } catch (err) { }
 });
 

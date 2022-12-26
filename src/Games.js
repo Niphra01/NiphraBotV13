@@ -91,7 +91,7 @@ async function getGames(client) {
     await Mongo.mongoClient.close();
   });
   await epicGames(client, guildsID, findResult)
-  await steamGames(client, guildsID, findResult);
+  //await steamGames(client, guildsID, findResult);
 
 }
 module.exports = { getGames };
@@ -205,7 +205,7 @@ const epicGames = async (client, guildsID, findResult) => {
                     );
                   var gameImage
                   el.keyImages.forEach(item => {
-                    if (item.type === 'Thumbnail') {
+                    if (item.type === 'Thumbnail' || item.type==="DieselStoreFrontWide") {
                       gameImage = item.url
                     }
                   })
@@ -218,8 +218,8 @@ const epicGames = async (client, guildsID, findResult) => {
                         `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`
                       )
                       .addFields([
-                        { name: 'Price', value: `~~${el.price.totalPrice.fmtPrice.originalPrice}~~ |  Free` },
-                        { name: 'Expire Date', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleDateString()}` }
+                        { name: 'Price', value: `Free` },
+                        { name: 'Free Until', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleDateString()}` }
                       ])
                     freegamesChannel.send({ embeds: [epicEmbed] });
                     console.log(`Added: ${cGuild.name} - ${el.title} `);
@@ -237,7 +237,7 @@ const epicGames = async (client, guildsID, findResult) => {
                       },
                     ]);
                     await Mongo.mongoClient.close();
-                  } catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
+                  } catch (err) {}
                 })
               }
             }
