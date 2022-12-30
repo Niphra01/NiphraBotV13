@@ -15,15 +15,14 @@ module.exports = {
     member = message.guild.members.cache.get(user.id);
     if (!user.bot) {
       const embed = new EmbedBuilder()
-        .setColor(0x333333)
+        .setColor('Green')
         .setThumbnail(user.displayAvatarURL())
-        .setTitle(`${user.username}#${user.discriminator}`)
+        .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
         .addFields([
           {
             name: "Nickname",
-            value: `${
-              member.nickname !== null ? `${member.nickname}` : "Null"
-            }`,
+            value: `${member.nickname !== null ? `${member.nickname}` : "-"
+              }`,
           },
           { name: "Created at", value: `${user.createdAt.toLocaleString()}` },
           { name: "Joined at", value: `${member.joinedAt.toLocaleString()}` },

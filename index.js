@@ -53,7 +53,7 @@ client.once("ready", async () => {
   }, 1000 * 60 * 60);
 });
 
-client.once("shardReconnecting", async() => {
+client.once("shardReconnecting", async () => {
   console.log("Reconnected!");
   setInterval(async function () {
     client.user.setActivity("Git Gud | -help", { type: "WATCHING" });
@@ -125,12 +125,7 @@ player.on("queueEnd", (queue) => {
 client.on("messageCreate", async (message) => {
   if (message) if (message.author.bot || !message.guild) return;
 
-  const isCommand = message.content
-    .slice(1)
-    .trim()
-    .split(/ +/)
-    .shift()
-    .toLowerCase(); //REMOVING PREFIX FROM ARGS
+  const isCommand = message.content.slice(1).trim().split(/ +/).shift().toLowerCase(); //REMOVING PREFIX FROM ARGS
   let PREFIX;
   if (!client.commands.has(isCommand)) {
     //IF BOT DOESN'T HAVE THIS COMMAND

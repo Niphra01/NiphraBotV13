@@ -12,9 +12,12 @@ module.exports = {
       return message.reply({ content: "Please mention a user!" });
     }
     const avatarEmbed = new EmbedBuilder()
-      .setColor(0x333333)
-      .setAuthor(user.username)
-      .setImage(user.displayAvatarURL());
+      .setColor('Green')
+      .setTitle('Avatar Link')
+      .setURL(`${user.displayAvatarURL()}?size=1024`)
+      .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
+      .setImage(`${user.displayAvatarURL()}?size=256`)
+      .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: `${message.author.displayAvatarURL()}` })
     message.channel.send({ embeds: [avatarEmbed] });
   },
 };

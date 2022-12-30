@@ -14,8 +14,8 @@ module.exports = {
     const allowed = message.channel.nsfw
       ? body.data.children.filter((child) => child.data.media === null)
       : body.data.children.filter(
-          (child) => !child.data.over_18 && child.data.media === null
-        );
+        (child) => !child.data.over_18 && child.data.media === null
+      );
     if (!allowed.length) {
       return message.channel.send(
         "It seems we are out of fresh memes!, Try again later."
@@ -23,11 +23,12 @@ module.exports = {
     }
     const randomNumber = Math.floor(Math.random() * allowed.length);
     const post = allowed[randomNumber].data;
-
+    console.log(post)
     const embed = new EmbedBuilder()
       .setTitle(post.title)
+      .setURL(`https://reddit.com${post.permalink}`)
       .setImage(post.url.replace(".gifv", ".gif"))
-      .setFooter({ text: `r/${args[0]}` });
+      .setFooter({ text: `r/${args[0]} | Requsted by ${message.author.tag}` });
     message.channel.send({ embeds: [embed] });
   },
 };
