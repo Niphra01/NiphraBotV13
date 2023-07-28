@@ -1,23 +1,21 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { useQueue } = require('discord-player')
 module.exports = {
-  name: "skip",
-  aliases: "skip",
-  description: "Skips current song",
-  voiceChannel: true,
+    data: new SlashCommandBuilder()
+        .setName('skip')
+        .setDescription('Skips current song'),
+    category: 'music',
+    async execute(interaction) {
+        const queue = useQueue(interaction.guild.id)
+        if (!queue || !queue.isPlaying()) {
+            return interaction.reply({ content: `There is no music currently playing!`, ephemeral: true })
+        }
 
-  execute(client, message) {
-    const queue = client.player.getQueue(message.guild.id);
+        const success = queue.node.skip();
 
-    if (!queue || !queue.playing)
-      return message.channel.send({
-        content: `${message.author}, There is no music currently playing!. ❌`,
-      });
-
-    const success = queue.skip();
-
-    return message.channel.send({
-      content: success
-        ? `**${queue.current.title}**, Skipped song ✅`
-        : `${message.author}, Something went wrong ❌`,
-    });
-  },
-};
+        return interaction.reply({
+            content: success ? `** ${queue.currentTrack.title} **, Skipped song ✅` : `${interaction.author}, Something went wrong ❌`,
+            ephemeral: true
+        })
+    }
+}

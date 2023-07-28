@@ -1,21 +1,19 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { useMainPlayer } = require('discord-player')
 module.exports = {
-  name: "stop",
-  aliases: "stop",
-  description: "Stops the music entirely",
-  voiceChannel: true,
+    data: new SlashCommandBuilder()
+        .setName('stop')
+        .setDescription('Stop music entirely'),
+    category: 'music',
+    async execute(interaction) {
+        const player = useMainPlayer();
+        const queue = player.nodes.get(interaction.guild.id);
 
-  execute(client, message) {
-    const queue = client.player.getQueue(message.guild.id);
+        if (!queue || !queue.node.isPlaying) {
+            return interaction.reply({ content: `There is no music currently playing!`, ephemeral: true })
+        }
 
-    if (!queue || !queue.playing)
-      return message.channel.send({
-        content: `${message.author}, There is no music currently playing!. ❌`,
-      });
-
-    queue.destroy();
-
-    message.channel.send({
-      content: `The music playing on this server has been turned off, see you next time ✅`,
-    });
-  },
-};
+        queue.delete();
+        return interaction.reply({ content: `Bot stopped`, ephemeral: true })
+    }
+}

@@ -1,42 +1,56 @@
-const { QueryType } = require("discord-player");
-
+const { SlashCommandBuilder } = require('discord.js');
+const { useMainPlayer } = require('discord-player')
+const { playerOptions } = require('../../src/configs/playerConfigs')
 module.exports = {
-  name: "play",
-  aliases: "play",
-  description: "Plays Songs",
-  voiceChannel: true,
+    data: new SlashCommandBuilder()
+        .setName('play')
+        .setDescription('plays music')
+        .addStringOption(option =>
+            option.setName('query')
+                .setDescription("Type a query/url")
+                .setRequired(true)),
+    category: 'music',
+    async execute(interaction) {
+        const player = useMainPlayer();
+        const channel = interaction.member.voice.channel;
+        if (!channel) return interaction.reply({ content: 'You are not connected to a voice channel!', ephemeral: true })
+        const query = interaction.options.getString("query", true)
 
-  async execute(client, message, args) {
-    if (!args[0])
-      return message.channel.send({
-        content: `${message.author}, Write the name of the music you want to search. ❌`,
-      });
+        await interaction.deferReply();
 
-    const res = await client.player.search(args.join(" "), {
-      requestedBy: message.member,
-      searchEngine: QueryType.AUTO,
-    });
+        const searchResult = await player.search(query, { requestedBy: interaction.user });
+        if (!searchResult.hasTracks()) {
+            await interaction.editReply({ content: `We found no tracks for ${query}`, ephemeral: true });
+            return;
+        }
 
-    if (!res || !res.tracks.length)
-      return message.channel.send({
-        content: `${message.author}, No results found! ❌`,
-      });
+        const queue = await player.nodes.create(interaction.guild, {
+            metadata: {
+                channel: interaction.channel,
+                client: interaction.client,
+                requestedBy: interaction.user
+            },
+            selfDeaf: playerOptions.selfDeaf ?? true,
+            volume: playerOptions.volume ?? 65,
+            leaveOnEmpty: playerOptions.leaveOnEmpty ?? true,
+            leaveOnEmptyCooldown: playerOptions.leaveOnEmptyCooldown ?? 60000,
+            leaveOnEnd: playerOptions.leaveOnEnd ?? true,
+            leaveOnEndCooldown: playerOptions.leaveOnEmptyCooldown ?? 60000,
+            maxHistorySize: playerOptions.maxHistorySize ?? 100,
+            maxSize: playerOptions.maxQueueSize ?? 1000
 
-    const queue = await client.player.createQueue(message.guild, {
-      metadata: message.channel,
-    });
+        })
+        await interaction.followUp({ content: `**${searchResult.tracks[0].title}** has enqueued`, ephemeral: true })
+        try {
+            if (!queue.connection) await queue.connect(channel);
+        } catch (error) {
+            await player.destroy(interaction.guild.id)
+            return interaction.followUp({ content: `Something went wrong: ${error}`, ephemeral: true })
+        }
+        await searchResult.playlist ? queue.addTrack(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
 
-    try {
-      if (!queue.connection) await queue.connect(message.member.voice.channel);
-    } catch {
-      await client.player.deleteQueue(message.guild.id);
-      return message.channel.send({
-        content: `${message.author}, I can't join audio channel. ❌`,
-      });
+
+        if (!queue.isPlaying()) await queue.node.play();
+
     }
-
-    res.playlist ? queue.addTracks(res.tracks) : queue.addTrack(res.tracks[0]);
-
-    if (!queue.playing) await queue.play();
-  },
-};
+}

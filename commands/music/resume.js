@@ -1,23 +1,24 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { useQueue } = require('discord-player')
 module.exports = {
-  name: "resume",
-  aliases: "resume",
-  description: "Resumes the stopped Song",
-  voiceChannel: true,
+    data: new SlashCommandBuilder()
+        .setName('resume')
+        .setDescription('Resumes the stopped song'),
+    category: 'music',
+    async execute(interaction) {
+        const queue = useQueue(interaction.guild.id)
+        if (!queue) {
+            return interaction.reply({ content: `There is no music currently playing!`, ephemeral: true })
+        }
+        if (!queue.node.isPaused()) {
+            return interaction.reply({ content: `Music still playing!`, ephemeral: true })
+        }
 
-  execute(client, message) {
-    const queue = client.player.getQueue(message.guild.id);
+        const success = queue.node.resume();
 
-    if (!queue)
-      return message.channel.send({
-        content: `${message.author}, There is no music currently playing!. ❌`,
-      });
-
-    const success = queue.setPaused(false);
-
-    return message.channel.send({
-      content: success
-        ? `**${queue.current.title}**, The song continues to play. ✅`
-        : `${message.author}, Something went wrong. ❌`,
-    });
-  },
-};
+        return interaction.reply({
+            content: success ? `** ${queue.currentTrack.title} ** now playing ✅` : `${interaction.user}, Something went wrong ❌`,
+            ephemeral: true
+        })
+    }
+}
