@@ -8,7 +8,7 @@
     "start:dev": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Niphra",
   "license": "ISC",
   "dependencies": {
     "@discord-player/extractor": "^4.4.0",

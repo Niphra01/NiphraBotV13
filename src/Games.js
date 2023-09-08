@@ -1,6 +1,5 @@
 require("dotenv").config();
 const { EmbedBuilder } = require("discord.js");
-//const appInfo = require("./configs/steamAppsInfo.json");
 const Mongo = require("./configs/DbConfig");
 const fetch = require("node-fetch");
 const date = new Date();
@@ -27,7 +26,7 @@ async function getGames(client) {
         "ea.com",
         "xbox.com",
     ];
-    const dataFlair = ["My Game", "Free to Play"];
+    const dataFlair = ["Commercial Game"];
     //Getting posts from the freegames subreddits
     const targetURL = "https://reddit.com/r/freegames/new/.json?limit=10";
     const resp = await fetch(targetURL, {
@@ -36,14 +35,12 @@ async function getGames(client) {
     const res = await resp.json();
     const posts = res.data.children;
     const guildsID = await client.guilds.fetch().then((guild) => guild.map((x) => x.id));
-    // console.log(guildsID)
+
     guildsID.forEach(async (guildID) => {
-        await Mongo.mongoClient.connect();
         const cGuild = client.guilds.cache.get(guildID);
         const freegamesChannel = await cGuild.channels
             .fetch()
             .then((channel) => channel.find((c) => c.name === "freegames"));
-
         if (freegamesChannel === undefined) {
             cGuild.channels.create("freegames", {
                 type: "GUILD_TEXT",
@@ -54,46 +51,19 @@ async function getGames(client) {
                     },
                 ],
             });
-        } else {
-            for (var i = 0; i < posts.length; i++) {
-                if (
-                    !dataFlair.some(
-                        (el) => posts[i].data.link_flair_text?.includes(el) || false
-                    ) &&
-                    conditions.some((c) => posts[i].data.url.includes(c))
-                ) {
-                    //Checking if the data is already in the database
-                    if (findResult.some((item) => item.dataURL == posts[i].data.url)) {
-                    }
-                    //If the data is not in the database, adding it
-                    else {
-
-                        await freegamesChannel.send(
-                            `${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url}`
-                        );
-                        try {
-                            await coll.insertMany([
-                                {
-                                    dataId: posts[i].data.id,
-                                    dataName: posts[i].data.title,
-                                    dataDate: date.toLocaleDateString(),
-                                    dataURL: posts[i].data.url,
-                                },
-                            ]);
-                            console.log(
-                                `Added: ${cGuild.name} - ${posts[i].data.title} (Free/100% Off)`
-                            );
-                        } catch (err) { }
-                    }
+        }
+        for (var i = 0; i < posts.length; i++) {
+            //Checking if the data is already in the database
+            if (dataFlair.some((el) => posts[i].data.link_flair_text?.includes(el) || true) && conditions.some((c) => posts[i].data.url.includes(c))) {
+                //If the data is not in the database, adding it
+                if (!findResult.some((item) => item.dataURL == posts[i].data.url)) {
+                    await freegamesChannel.send(`${posts[i].data.title} (Free/100% Off) \n ${posts[i].data.url}`);
+                    databaseAdd(posts[i].id, posts[i].title, posts[i].data.url);
                 }
             }
         }
-
-        await Mongo.mongoClient.close();
     });
     await epicGames(client, guildsID, findResult)
-    //await steamGames(client, guildsID, findResult);
-
 }
 module.exports = { getGames };
 
@@ -111,65 +81,59 @@ const epicGames = async (client, guildsID, findResult) => {
         .then((res) => res.json())
         .then((data) =>
             data.data.Catalog.searchStore.elements.forEach((el) => {
-                if (
-                    findResult.some((item) => item.dataId == el.id)
-                ) {
-                    console.log(`Game already added to DB - ${el.title}`);
-                }
-                else {
-                    if (el.promotions !== null) {
-                        if (el.promotions.promotionalOffers.length !== 0) {
-                            if (
-                                new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].startDate) < date < new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
-                                && el.price.totalPrice.fmtPrice.intermediatePrice == 0
-                            ) {
-                                guildsID.forEach(async (guildID) => {
-                                    const cGuild = client.guilds.cache.get(guildID);
-                                    const freegamesChannel = await cGuild.channels
-                                        .fetch()
-                                        .then((channel) =>
-                                            channel.find((c) => c.name === "freegames")
-                                        );
-                                    var gameImage
-                                    el.keyImages.forEach(item => {
-                                        if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
-                                            gameImage = item.url
-                                        }
-                                    })
-                                    try {
-                                        const epicEmbed = new EmbedBuilder()
-                                            .setTitle(el.title.toString())
-                                            .setDescription(el.description.toString())
-                                            .setImage(gameImage)
-                                            .setURL(el.productSlug ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
-                                                `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`
-                                            )
-                                            .addFields([
-                                                { name: 'Price', value: `Free` },
-                                                { name: 'Free Until', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleDateString()}` }
-                                            ])
-                                        freegamesChannel.send({ embeds: [epicEmbed] });
-                                        console.log(`Added: ${cGuild.name} - ${el.title} `);
-                                    }
-                                    catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
-
-                                    try {
-                                        await Mongo.mongoClient.connect();
-                                        await coll.insertMany([
-                                            {
-                                                dataId: el.id,
-                                                dataName: el.title,
-                                                dataDate: date.toLocaleDateString(),
-                                                dataURL: el.productSlug ? `https://store.epicgames.com/en-US/p/${el.productSlug}` : `https://store.epicgames.com/en-US/p/${el.offerMappings[0].pageSlug}`,
-                                            },
-                                        ]);
-                                        await Mongo.mongoClient.close();
-                                    } catch (err) { }
-                                })
+                if (!findResult.some((item) => item.dataId == el.id)) {
+                    if (el.price.lineOffers[0].appliedRules.length !== 0) {
+                        guildsID.forEach(async (guildID) => {
+                            const cGuild = client.guilds.cache.get(guildID);
+                            const freegamesChannel = await cGuild.channels
+                                .fetch()
+                                .then((channel) =>
+                                    channel.find((c) => c.name === "freegames")
+                                );
+                            var gameImage
+                            el.keyImages.forEach(item => {
+                                if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
+                                    gameImage = item.url
+                                }
+                            })
+                            var gameURL = el.productSlug != null ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
+                                `https://store.epicgames.com/en-US/p/${el.catalogNs.mappings[0].pageSlug}`;
+                            try {
+                                const epicEmbed = new EmbedBuilder()
+                                    .setTitle(el.title.toString())
+                                    .setDescription(el.description.toString())
+                                    .setImage(gameImage)
+                                    .setURL(gameURL)
+                                    .addFields([
+                                        { name: 'Price', value: `Free` },
+                                        { name: 'Free Until', value: `${new Date(el.price.lineOffers[0].appliedRules[0].endDate).toLocaleDateString()}` }
+                                    ])
+                                freegamesChannel.send({ embeds: [epicEmbed] });
+                                console.log(`Added: ${cGuild.name} - ${el.title} `);
                             }
-                        }
+                            catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
+
+                            databaseAdd(el.id, el.title, gameURL);
+                        })
                     }
                 }
             })
         );
 };
+
+const databaseAdd = async (itemId, itemTitle, itemURL) => {
+    try {
+        await Mongo.mongoClient.connect();
+        await coll.insertMany([
+            {
+                dataId: itemId,
+                dataName: itemTitle,
+                dataDate: date.toLocaleDateString(),
+                dataURL: itemURL,
+            },
+        ]);
+        await Mongo.mongoClient.close();
+    } catch (err) { }
+}
+
+

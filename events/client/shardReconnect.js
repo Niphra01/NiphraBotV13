@@ -2,7 +2,6 @@ const { Events, ActivityType } = require('discord.js');
 const { getGames } = require('../../src/games');
 module.exports = {
     name: Events.ShardReconnecting,
-    once: false,
     async execute(client) {
         client.user.setActivity('Git - Gud', { type: ActivityType.Competing })
         console.log(`Reconnected! as ${client.user.tag}`);
