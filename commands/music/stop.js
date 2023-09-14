@@ -14,6 +14,6 @@ module.exports = {
         }
 
         queue.delete();
-        return interaction.reply({ content: `Bot stopped`, ephemeral: true })
+        return interaction.reply({ content: `Music stopped`, ephemeral: true })
     }
 }

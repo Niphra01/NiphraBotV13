@@ -25,11 +25,6 @@ module.exports = {
         }
 
         const queue = await player.nodes.create(interaction.guild, {
-            metadata: {
-                channel: interaction.channel,
-                client: interaction.client,
-                requestedBy: interaction.user
-            },
             selfDeaf: playerOptions.selfDeaf ?? true,
             volume: playerOptions.volume ?? 65,
             leaveOnEmpty: playerOptions.leaveOnEmpty ?? true,

@@ -14,7 +14,7 @@ module.exports = {
         const success = queue.node.pause();
 
         return interaction.reply({
-            content: success ? `** ${queue.currentTrack.title} ** has stopped ✅` : `${interaction.author}, Something went wrong ❌`,
+            content: success ? `** ${queue.currentTrack.title} ** has paused ✅` : `${interaction.author}, Something went wrong ❌`,
             ephemeral: true
         })
     }

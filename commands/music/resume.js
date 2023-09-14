@@ -17,7 +17,7 @@ module.exports = {
         const success = queue.node.resume();
 
         return interaction.reply({
-            content: success ? `** ${queue.currentTrack.title} ** now playing ✅` : `${interaction.user}, Something went wrong ❌`,
+            content: success ? `** ${queue.currentTrack.title} ** now resuming ✅` : `${interaction.user}, Something went wrong ❌`,
             ephemeral: true
         })
     }
