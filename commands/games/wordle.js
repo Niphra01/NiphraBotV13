@@ -78,11 +78,10 @@ module.exports = {
       isWord,
       tempWord = [];
 
-    //const word = interaction.options.getString('word', true)
     lang = interaction.options.getString('language', true)
     if (user.some((u) => u === interaction.user.id)) {
       return interaction.reply({
-        content: `You already started the game give your answer without -wordle`, ephemeral: true
+        content: `You already started the game type your guess.`, ephemeral: true
       });
     } else {
       if (lang === "tr") {
@@ -145,13 +144,18 @@ module.exports = {
         buffer = 0;
         rowOffset += squareSize + 5;
       }
-      const BlEmbed = new EmbedBuilder().setTitle(
-        `Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`
-      );
       const attachment = new AttachmentBuilder(canvas.toBuffer(), {
         name: "wordle.png",
       });
-      await interaction.reply({ embeds: [BlEmbed], files: [attachment], ephemeral: true })
+
+      const BlEmbed = new EmbedBuilder()
+      .setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
+      .setAuthor({name:`${interaction.user.username.toUpperCase()}`, iconURL:interaction.user.displayAvatarURL()})
+      .setImage(`attachment://wordle.png`)
+      .setFooter({text:`Language: ${lang.toUpperCase()}`})
+
+      
+      await interaction.reply({ embeds: [BlEmbed], files: [attachment] })
 
       const filter = (m) => m.author.id === interaction.user.id;
       const collector = interaction.channel.createMessageCollector({
@@ -296,13 +300,17 @@ module.exports = {
           buffer = 0;
           rowOffset += squareSize + 5;
         }
-        const BlEmbed = new EmbedBuilder().setTitle(
-          `Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`
-        );
+
         const attachment2 = new AttachmentBuilder(canvas.toBuffer(), {
           name: "wordle.png",
         });
-        await interaction.editReply({ embeds: [BlEmbed], files: [attachment2], ephemeral: true });
+
+        const BlEmbed = new EmbedBuilder().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
+        .setAuthor({name:`${interaction.user.username.toUpperCase()}`, iconURL:interaction.user.displayAvatarURL()})
+        .setImage(`attachment://wordle.png`)
+        .setFooter({text:`Language: ${lang.toUpperCase()}`})
+        
+        await interaction.editReply({ embeds: [BlEmbed], files: [attachment2]});
         interaction.channel.bulkDelete(1)
         isWord = false;
 

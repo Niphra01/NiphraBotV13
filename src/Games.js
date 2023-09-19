@@ -82,7 +82,8 @@ const epicGames = async (client, guildsID, findResult) => {
         .then((data) =>
             data.data.Catalog.searchStore.elements.forEach((el) => {
                 if (!findResult.some((item) => item.dataId == el.id)) {
-                    if (el.price.lineOffers[0].appliedRules.length !== 0) {
+                    if (el.price.lineOffers[0].appliedRules.length !== 0 && el.price.totalPrice.discountPrice == 0) {
+                        console.log(el.title)
                         guildsID.forEach(async (guildID) => {
                             const cGuild = client.guilds.cache.get(guildID);
                             const freegamesChannel = await cGuild.channels
