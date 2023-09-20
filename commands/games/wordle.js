@@ -148,12 +148,7 @@ module.exports = {
         name: "wordle.png",
       });
 
-      const BlEmbed = new EmbedBuilder()
-      .setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
-      .setAuthor({name:`${interaction.user.username.toUpperCase()}`, iconURL:interaction.user.displayAvatarURL()})
-      .setImage(`attachment://wordle.png`)
-      .setFooter({text:`Language: ${lang.toUpperCase()}`})
-
+      const BlEmbed = Embed(interaction,lang,`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`); 
       
       await interaction.reply({ embeds: [BlEmbed], files: [attachment] })
 
@@ -166,7 +161,7 @@ module.exports = {
       collector.on("collect", async (collected) => {
         let value = collected.content.toLowerCase();
         if (value.length != 5) {
-          interaction.channel.bulkDelete(1)
+          await interaction.channel.bulkDelete(1)
           return interaction.followUp({
             content: "You need to type word with 5 letter", ephemeral: true
           });
@@ -181,7 +176,7 @@ module.exports = {
         });
 
         if (!isWord) {
-          interaction.channel.bulkDelete(1)
+          await interaction.channel.bulkDelete(1)
           return interaction.followUp({ content: `Word **${value}** not in my library`, ephemeral: true });
         }
         if (guesses == "") {
@@ -300,40 +295,35 @@ module.exports = {
           buffer = 0;
           rowOffset += squareSize + 5;
         }
+        await interaction.channel.bulkDelete(1)
+
 
         const attachment2 = new AttachmentBuilder(canvas.toBuffer(), {
           name: "wordle.png",
         });
 
-        const BlEmbed = new EmbedBuilder().setTitle(`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`)
-        .setAuthor({name:`${interaction.user.username.toUpperCase()}`, iconURL:interaction.user.displayAvatarURL()})
-        .setImage(`attachment://wordle.png`)
-        .setFooter({text:`Language: ${lang.toUpperCase()}`})
-        
+        const BlEmbed = Embed(interaction,lang,`Blacklisted Words: ${blackListedWords.toString().toUpperCase()}`);       
         await interaction.editReply({ embeds: [BlEmbed], files: [attachment2]});
-        interaction.channel.bulkDelete(1)
+        
         isWord = false;
 
         if (value === randomWord) {
-          const ResEmbed = new EmbedBuilder().setTitle(
-            `You guess the word. Congrats.`
-          ).setDescription(`${userMention(interaction.user.id)}`);
-          interaction.editReply({ embeds: [ResEmbed] });
+
+          const BlEmbed = Embed(interaction,lang,`You guess the word. Congrats.`);
+          await interaction.editReply({ embeds: [BlEmbed] ,files: [attachment2] });
           collector.stop("over");
         } else if (guesses.length === 6) {
-          const ResEmbed = new EmbedBuilder().setTitle(
-            `You didn't find the word. The word was: ${randomWord}`
-          ).setDescription(`${userMention(interaction.user.id)}`);
-          interaction.editReply({ embeds: [ResEmbed] });
+          
+          const BlEmbed = Embed(interaction,lang,`You didn't find the word. The word was: ${randomWord}`);
+          await interaction.editReply({ embeds: [BlEmbed] ,files: [attachment2] });
           collector.stop("over");
         }
       });
       collector.on("end", async (collected, reason) => {
         if (reason === "time") {
-          const ResEmbed = new EmbedBuilder().setTitle(
-            `$You didn't guess the word at time. The word was: ${randomWord}`
-          ).setDescription(`${userMention(interaction.user.id)}`);
-          interaction.editReply({ embeds: [ResEmbed] });
+          const BlEmbed = Embed(interaction,lang,`$You didn't guess the word at time. The word was: ${randomWord}`);
+
+          await interaction.editReply({ embeds: [BlEmbed],files: [attachment2] });
           try {
             await user.splice(user.indexOf(interaction.user.id), 1);
           } catch (err) {
@@ -351,3 +341,15 @@ module.exports = {
 
   },
 };
+
+
+const Embed = (interaction,lang,titleValue) => {
+
+  const BlEmbed = new EmbedBuilder()
+  .setTitle(titleValue)
+  .setAuthor({name:`${interaction.user.username.toUpperCase()}`, iconURL:interaction.user.displayAvatarURL()})
+  .setImage(`attachment://wordle.png`)
+  .setFooter({text:`Language: ${lang.toUpperCase()}`})
+
+  return BlEmbed;
+}

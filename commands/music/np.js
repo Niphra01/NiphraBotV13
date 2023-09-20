@@ -13,8 +13,6 @@ module.exports = {
             return interaction.reply({ content: `There is no music currently playing!`, ephemeral: true })
         }
 
-        const methods = ['disabled', 'track', 'queue']
-
         const track = queue.currentTrack;
         const timeStamp = queue.node.getTimestamp();
         const bar = `**\`${timeStamp.current.label}\`** ${queue.node.createProgressBar({
