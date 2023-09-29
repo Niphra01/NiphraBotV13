@@ -21,7 +21,7 @@ module.exports = {
 
             resp = math.eval(value);
         } catch (e) {
-            return interaction.reply("Please Enter a valid Value!");
+            return interaction.reply({content:`${e.message}`, ephemeral:true});
         }
 
         const embed = new EmbedBuilder()
