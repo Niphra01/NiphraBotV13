@@ -6,6 +6,8 @@ let result = [
   []
 ];
 
+let row1,row2,row3;
+
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -44,41 +46,49 @@ module.exports = {
           content: "You aren't the oppenent/player in this game", ephemeral: true
         });
       }
-
       switch (collected.customId) {
         case "button1":
+          row1.components[0].setDisabled(true)
           result[0][0] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button2":
+          row1.components[1].setDisabled(true)
           result[0][1] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button3":
+          row1.components[2].setDisabled(true)
           result[0][2] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button4":
+          row2.components[0].setDisabled(true)
           result[1][0] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button5":
+          row2.components[1].setDisabled(true)
           result[1][1] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button6":
+          row2.components[2].setDisabled(true)
           result[1][2] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button7":
+          row3.components[0].setDisabled(true)
           result[2][0] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button8":
+          row3.components[1].setDisabled(true)
           result[2][1] = symbol;
           DrawTicTacToe(interaction)
           break;
         case "button9":
+          row3.components[2].setDisabled(true)
           result[2][2] = symbol;
           DrawTicTacToe(interaction)
           break;
@@ -167,13 +177,13 @@ const Buttons = (rowNumber) => {
     .setLabel(`-`)
     .setStyle(ButtonStyle.Primary)
 
-  const row1 = new ActionRowBuilder()
+  row1 = new ActionRowBuilder()
     .addComponents(button1, button2, button3)
 
-  const row2 = new ActionRowBuilder()
+  row2 = new ActionRowBuilder()
     .addComponents(button4, button5, button6)
 
-  const row3 = new ActionRowBuilder()
+  row3 = new ActionRowBuilder()
     .addComponents(button7, button8, button9)
   if (rowNumber == 1) {
     return row1
@@ -238,12 +248,12 @@ const DrawTicTacToe = async (interaction, isReply, reason, player1, oppenent1) =
   if (isReply) {
     return await interaction.reply({ embeds: [BlEmbed], files: [attachment], components: [Buttons(1), Buttons(2), Buttons(3)] })
   } else if (reason == "tie") {
-    return await interaction.editReply({ embeds: [BlEmbed.setDescription("It's a tie")], files: [attachment], components: [Buttons(1), Buttons(2), Buttons(3)] })
+    return await interaction.editReply({ embeds: [BlEmbed.setDescription("It's a tie")], files: [attachment],components:[]})
   } else if (reason == "win") {
-    return await interaction.editReply({ embeds: [BlEmbed.setDescription(`${player1?player1:oppenent1} win.`)], files: [attachment], components: [Buttons(1), Buttons(2), Buttons(3)] })
+    return await interaction.editReply({ embeds: [BlEmbed.setDescription(`${player1?player1:oppenent1} win.`)], files: [attachment],components:[]})
   }
   else {
-    return await interaction.editReply({ embeds: [BlEmbed].setDescription, files: [attachment], components: [Buttons(1), Buttons(2), Buttons(3)] })
+    return await interaction.editReply({ embeds: [BlEmbed].setDescription, files: [attachment], components: [row1, row2, row3] })
   }
 
 }
