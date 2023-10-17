@@ -1,13 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder, ComponentType } = require("discord.js");
 const Canvas = require("canvas");
-let result = [
-  [],
-  [],
-  []
-];
-
-let row1,row2,row3;
-
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,13 +12,22 @@ module.exports = {
   category: "games",
   async execute(interaction) {
 
-    let symbol, isReply, count = 0, playerTurn = true;
+    const buttons = new Buttons;
+    const replies = new Replies;
+
+    let row1 = buttons.row1(), row2 = buttons.row2(), row3 = buttons.row3();
+    let result = [
+      [],
+      [],
+      []
+    ];
+
+    let symbol, count = 0, playerTurn = true;
     let oppenent1 = await interaction.options.getUser("user");
     let player1 = await interaction.user;
 
-    console.log(player1)
-
-    const reply = await DrawTicTacToe(interaction, isReply = true, null, player1, oppenent1);
+    let tttEmbed = await Embed(player1, oppenent1);
+    const reply = await replies.firstReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
 
     const collector = reply.createMessageComponentCollector({ componentType: ComponentType.Button, time: 300000 });
 
@@ -48,49 +49,58 @@ module.exports = {
       }
       switch (collected.customId) {
         case "button1":
-          row1.components[0].setDisabled(true)
+          row1.components[0].setDisabled(true);
+          row1.components[0].setLabel(symbol);
           result[0][0] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button2":
           row1.components[1].setDisabled(true)
+          row1.components[1].setLabel(symbol);
           result[0][1] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button3":
           row1.components[2].setDisabled(true)
+          row1.components[2].setLabel(symbol);
           result[0][2] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button4":
           row2.components[0].setDisabled(true)
+          row2.components[0].setLabel(symbol);
           result[1][0] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button5":
           row2.components[1].setDisabled(true)
+          row2.components[1].setLabel(symbol);
           result[1][1] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button6":
           row2.components[2].setDisabled(true)
+          row2.components[2].setLabel(symbol);
           result[1][2] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button7":
           row3.components[0].setDisabled(true)
+          row3.components[0].setLabel(symbol);
           result[2][0] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button8":
           row3.components[1].setDisabled(true)
+          row3.components[1].setLabel(symbol);
           result[2][1] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
         case "button9":
           row3.components[2].setDisabled(true)
+          row3.components[2].setLabel(symbol);
           result[2][2] = symbol;
-          DrawTicTacToe(interaction)
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
           break;
       }
 
@@ -105,98 +115,43 @@ module.exports = {
         result[0][0] == result[1][1] && result[0][0] == result[2][2] && result[0][0] != null ||
         result[0][2] == result[1][1] && result[0][2] == result[2][0] && result[0][2] != null)
       ) {
-        if(symbol == "X"){
-          await DrawTicTacToe(interaction, null, "win", player1, null)
-        }else{
-          await DrawTicTacToe(interaction, null, "win", null, oppenent1)
+        if (symbol == "X") {
+          replies.win(interaction, tttEmbed, player1, null, await DrawTicTacToe(result))
+        } else {
+          replies.win(interaction, tttEmbed, null, oppenent1, await DrawTicTacToe(result))
         }
-        
+
         collector.stop("over");
       } else if (count == 9) {
 
-        await DrawTicTacToe(interaction, null, "tie", player1, oppenent1)
+        replies.tie(interaction, tttEmbed, await DrawTicTacToe(result))
         collector.stop("time");
       }
     });
     collector.on('end', (collected, reason) => {
-      if (reason == "time") {
+      result = [
+        [],
+        [],
+        []
+      ];
+      if (reason === "time") {
         return interaction.editReply("Game finished cause the timer dropped 0.")
       }
-
     });
   }
-
 }
 
 const Embed = (player1, oppenent1) => {
 
-  const BlEmbed = new EmbedBuilder()
+  const tttEmbed = new EmbedBuilder()
     .setTitle("Tic-Tac-Toe")
     .setDescription(`${player1} vs ${oppenent1}`)
     .setImage(`attachment://ttt.png`)
 
-  return BlEmbed;
+  return tttEmbed;
 }
 
-
-const Buttons = (rowNumber) => {
-  let button1 = new ButtonBuilder()
-    .setCustomId(`button1`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button2 = new ButtonBuilder()
-    .setCustomId(`button2`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button3 = new ButtonBuilder()
-    .setCustomId(`button3`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button4 = new ButtonBuilder()
-    .setCustomId(`button4`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button5 = new ButtonBuilder()
-    .setCustomId(`button5`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button6 = new ButtonBuilder()
-    .setCustomId(`button6`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button7 = new ButtonBuilder()
-    .setCustomId(`button7`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button8 = new ButtonBuilder()
-    .setCustomId(`button8`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-  let button9 = new ButtonBuilder()
-    .setCustomId(`button9`)
-    .setLabel(`-`)
-    .setStyle(ButtonStyle.Primary)
-
-  row1 = new ActionRowBuilder()
-    .addComponents(button1, button2, button3)
-
-  row2 = new ActionRowBuilder()
-    .addComponents(button4, button5, button6)
-
-  row3 = new ActionRowBuilder()
-    .addComponents(button7, button8, button9)
-  if (rowNumber == 1) {
-    return row1
-  }
-  if (rowNumber == 2) {
-    return row2
-  }
-  if (rowNumber == 3) {
-    return row3
-  }
-}
-
-const DrawTicTacToe = async (interaction, isReply, reason, player1, oppenent1) => {
+const DrawTicTacToe = async (result) => {
   const canvas = Canvas.createCanvas(201, 215);
   const context = canvas.getContext("2d");
 
@@ -241,19 +196,81 @@ const DrawTicTacToe = async (interaction, isReply, reason, player1, oppenent1) =
     rowOffset += squareSize + 5;
   }
 
-  var BlEmbed = Embed(player1, oppenent1);
-  var attachment = new AttachmentBuilder(canvas.toBuffer(), {
+
+  return new AttachmentBuilder(canvas.toBuffer(), {
     name: "ttt.png",
   });
-  if (isReply) {
-    return await interaction.reply({ embeds: [BlEmbed], files: [attachment], components: [Buttons(1), Buttons(2), Buttons(3)] })
-  } else if (reason == "tie") {
-    return await interaction.editReply({ embeds: [BlEmbed.setDescription("It's a tie")], files: [attachment],components:[]})
-  } else if (reason == "win") {
-    return await interaction.editReply({ embeds: [BlEmbed.setDescription(`${player1?player1:oppenent1} win.`)], files: [attachment],components:[]})
+
+}
+
+
+class Buttons {
+  row1() {
+    let button1 = new ButtonBuilder()
+      .setCustomId(`button1`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button2 = new ButtonBuilder()
+      .setCustomId(`button2`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button3 = new ButtonBuilder()
+      .setCustomId(`button3`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+
+    return new ActionRowBuilder()
+      .addComponents(button1, button2, button3)
   }
-  else {
-    return await interaction.editReply({ embeds: [BlEmbed].setDescription, files: [attachment], components: [row1, row2, row3] })
+  row2() {
+    let button4 = new ButtonBuilder()
+      .setCustomId(`button4`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button5 = new ButtonBuilder()
+      .setCustomId(`button5`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button6 = new ButtonBuilder()
+      .setCustomId(`button6`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+
+    return new ActionRowBuilder()
+      .addComponents(button4, button5, button6)
+  }
+  row3() {
+    let button7 = new ButtonBuilder()
+      .setCustomId(`button7`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button8 = new ButtonBuilder()
+      .setCustomId(`button8`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+    let button9 = new ButtonBuilder()
+      .setCustomId(`button9`)
+      .setLabel(`-`)
+      .setStyle(ButtonStyle.Primary)
+
+    return new ActionRowBuilder()
+      .addComponents(button7, button8, button9)
+  }
+}
+
+class Replies {
+
+  firstReply(interaction, tttEmbed, attachment, row1, row2, row3) {
+    return interaction.reply({ embeds: [tttEmbed], files: [attachment], components: [row1, row2, row3] })
+  }
+  tie(interaction, tttEmbed, attachment) {
+    return interaction.editReply({ embeds: [tttEmbed.setDescription("It's a tie")], files: [attachment], components: [] })
+  }
+  win(interaction, tttEmbed, player1, oppenent1, attachment) {
+    return interaction.editReply({ embeds: [tttEmbed.setDescription(`${player1 ? player1 : oppenent1} win.`)], files: [attachment], components: [] })
+  }
+  normalReply(interaction, tttEmbed, attachment, row1, row2, row3) {
+    return interaction.editReply({ embeds: [tttEmbed], files: [attachment], components: [row1, row2, row3] })
   }
 
 }
