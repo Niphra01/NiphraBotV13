@@ -152,7 +152,7 @@ module.exports = {
       
       await interaction.reply({ embeds: [BlEmbed], files: [attachment] })
 
-      const filter = (m) => m.author.id === interaction.user.id;
+      const filter = (m) => m.author.id === interaction.user.id;   
       const collector = interaction.channel.createMessageCollector({
         filter,
         time: 300000,
