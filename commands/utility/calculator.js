@@ -14,7 +14,7 @@ module.exports = {
     async execute(interaction) {
         let value = interaction.options.getString('value', true)
         if (!value) {
-            interaction.reply({ content: `Please Enter a valid value!` })
+            return interaction.reply({ content: `Please Enter a valid value!` })
         }
         let resp;
         try {
@@ -31,6 +31,6 @@ module.exports = {
                 { name: "Input", value: `\`\`\`js\n${value}\`\`\`` },
                 { name: "Output", value: `\`\`\`js\n${resp}\`\`\`` },
             ]);
-        interaction.reply({ embeds: [embed] });
+        return interaction.reply({ embeds: [embed] });
     },
 };

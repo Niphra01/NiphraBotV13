@@ -29,7 +29,6 @@ module.exports = {
             ? `And **${songs - 5}** Other Song...`
             : `There are **${songs}** Songs in the List.`;
 
-        console.log(tracks)
         embed.setDescription(
             `Currently Playing: \`${queue.currentTrack.title}\`\n\n ${tracks
                 .slice(0, 5)
@@ -37,6 +36,6 @@ module.exports = {
         )
         embed.setTimestamp();
 
-        interaction.reply({ embeds: [embed] })
+        return interaction.reply({ embeds: [embed] })
     }
 }

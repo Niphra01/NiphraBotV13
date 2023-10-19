@@ -1,4 +1,5 @@
 const { Events } = require('discord.js');
+const { logger } = require('../../src/logger');
 
 module.exports = {
     name: Events.GuildMemberRemove,
@@ -9,7 +10,7 @@ module.exports = {
                 .send("**" + member.user.username + "**, ayrıldı.");
         }
         catch (err) {
-            console.log(err);
+            logger.error(err);
         }
     }
 };

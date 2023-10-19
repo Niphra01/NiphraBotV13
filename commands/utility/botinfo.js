@@ -21,6 +21,6 @@ module.exports = {
                 { name: "Created at", value: client.user.createdAt.toLocaleString() },
                 { name: "Servers", value: client.guilds.cache.size.toString() },
             ]);
-        interaction.reply({ embeds: [botEmbed] });
+        return interaction.reply({ embeds: [botEmbed] });
     }
 }

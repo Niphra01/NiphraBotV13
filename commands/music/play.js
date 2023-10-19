@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useMainPlayer } = require('discord-player')
-const { playerOptions } = require('../../src/configs/playerConfigs')
+const { playerOptions } = require('../../src/configs/playerConfigs');
+const { logger } = require('../../src/logger');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -40,6 +41,7 @@ module.exports = {
             if (!queue.connection) await queue.connect(channel);
         } catch (error) {
             await player.destroy(interaction.guild.id)
+            logger.error(error);
             return interaction.followUp({ content: `Something went wrong: ${error}`, ephemeral: true })
         }
         await searchResult.playlist ? queue.addTrack(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);

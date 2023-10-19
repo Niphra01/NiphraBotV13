@@ -12,7 +12,6 @@ module.exports = {
   async execute(interaction) {
     let user = interaction.options.getUser('user')
 
-    //return console.log(interaction.guild.members.cache.get(user.id))
     member = interaction.guild.members.cache.get(user.id);
     if (!user.bot) {
       const embed = new EmbedBuilder()
@@ -34,9 +33,9 @@ module.exports = {
               .join(", ")}`,
           },
         ]);
-      interaction.reply({ embeds: [embed] });
+      return interaction.reply({ embeds: [embed] });
     } else {
-      interaction.reply({ content: "User is bot", ephemeral: true });
+      return interaction.reply({ content: "User is bot", ephemeral: true });
     }
   },
 };

@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { logger } = require('../../src/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,8 +15,6 @@ module.exports = {
         if (!user) {
             return interaction.reply({ content: `Please metion a user!`, ephemeral: true });
         }
-
-        console.log(interaction.user.id)
         const avatarEmbed = new EmbedBuilder()
             .setColor('Green')
             .setTitle('Avatar Link')

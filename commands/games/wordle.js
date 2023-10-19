@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, userMention } = require("discord.js");
 const Canvas = require("canvas");
 const words = require("../../src/configs/WordList.json");
+const { logger } = require("../../src/logger");
 let user = [];
 module.exports = {
   data: new SlashCommandBuilder()
@@ -327,13 +328,13 @@ module.exports = {
           try {
             await user.splice(user.indexOf(interaction.user.id), 1);
           } catch (err) {
-            console.log("User already removed");
+            logger.info("User already removed");
           }
         } else if (reason === "over") {
           try {
             await user.splice(user.indexOf(interaction.user.id), 1);
           } catch (err) {
-            console.log("User already removed");
+            logger.info("User already removed");
           }
         }
       });

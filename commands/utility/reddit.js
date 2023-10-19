@@ -28,19 +28,18 @@ module.exports = {
                 (child) => !child.data.over_18 && child.data.media === null
             );
         if (!allowed.length) {
-            return interaction.reply(
-                "It seems we are out of fresh memes!, Try again later."
-            );
+            return interaction.reply({
+               content: "It seems we are out of fresh memes!, Try again later.",ephemeral:true
+            });
         }
 
         const randomNumber = Math.floor(Math.random() * allowed.length);
         const post = allowed[randomNumber].data;
-        console.log(post)
         const embed = new EmbedBuilder()
             .setTitle(post.title)
             .setURL(`https://reddit.com${post.permalink}`)
             .setImage(post.url.replace(".gifv", ".gif"))
             .setFooter({ text: `r/${subreddit} | Requsted by ${interaction.user.tag}` });
-        await interaction.followUp({ embeds: [embed] });
+        return await interaction.followUp({ embeds: [embed] });
     },
 };

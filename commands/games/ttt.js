@@ -123,7 +123,6 @@ module.exports = {
 
         collector.stop("over");
       } else if (count == 9) {
-
         replies.tie(interaction, tttEmbed, await DrawTicTacToe(result))
         collector.stop("time");
       }
@@ -136,6 +135,8 @@ module.exports = {
       ];
       if (reason === "time") {
         return interaction.editReply("Game finished cause the timer dropped 0.")
+      }
+      if(reason === 'over'){
       }
     });
   }

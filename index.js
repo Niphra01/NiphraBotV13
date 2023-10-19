@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { Player } = require('discord-player')
 const { YoutubeExtractor, SpotifyExtractor, SoundCloudExtractor } = require('@discord-player/extractor');
+const { logger } = require("./src/logger");
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -35,7 +36,7 @@ for (const folder of commandFolders) {
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+            logger.info(`The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 }

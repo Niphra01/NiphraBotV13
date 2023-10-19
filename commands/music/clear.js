@@ -17,6 +17,6 @@ module.exports = {
         }
         await queue.tracks.clear();
 
-        interaction.reply({ content: `The queue has just been cleared. 🗑️` });
+        return interaction.reply({ content: `The queue has just been cleared. 🗑️` });
     }
 }

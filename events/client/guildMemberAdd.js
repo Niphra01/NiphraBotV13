@@ -1,4 +1,5 @@
 const { Events } = require('discord.js');
+const { logger } = require('../../src/logger');
 
 module.exports = {
     name: Events.GuildMemberAdd,
@@ -12,7 +13,7 @@ module.exports = {
             member.roles.add(role);
 
         } catch (err) {
-            console.log(err);
+            logger.error(err);
         }
     },
 };

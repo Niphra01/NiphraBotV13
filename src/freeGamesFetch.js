@@ -2,6 +2,7 @@ require("dotenv").config();
 const { EmbedBuilder, ChannelType, PermissionsBitField } = require("discord.js");
 const Mongo = require("./configs/DbConfig");
 const fetch = require("node-fetch");
+const { logger } = require("./logger");
 const date = new Date();
 const gamesColl = Mongo.dbo.collection("FetchedGames");
 const channelColl = Mongo.dbo.collection("FreegamesChannel");
@@ -62,7 +63,9 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
                                 ])
                             await FreegamesChannel(epicEmbed, client,channelResult);
                         }
-                        catch (err) { client.users.fetch("201652761031475200").then(dm => dm.send(`ERROR: ${err} --- ${el.title}`)) }
+                        catch (err) { 
+                            logger.error(`${err} --- ${el.title}`);
+                        }
 
                         await DatabaseAdd(el.id, el.title, gameURL);
 
@@ -122,7 +125,9 @@ const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
             },
         ]);
         await Mongo.mongoClient.close();
-    } catch (err) { }
+    } catch (err) { 
+        logger.error(`Something went wrong when adding Game Info to the collection.`,err);
+    }
 }
 
 const MongoChannelAdd = async (channelId) => {
@@ -134,7 +139,9 @@ const MongoChannelAdd = async (channelId) => {
             }
         ])
         await Mongo.mongoClient.close();
-    } catch (err) { }
+    } catch (err) { 
+        logger.error(`Something went wrong when adding channel to the collection.`,err)
+    }
 }
 
 const FreegamesChannel = async (embed, client,channelResult) => {
@@ -144,7 +151,6 @@ const FreegamesChannel = async (embed, client,channelResult) => {
         const freegamesChannel = await cGuild.channels
             .fetch()
             .then((channel) => channel.find((c) => channelResult.some((item) => item.mChannelId == c.id)));
-            console.log(freegamesChannel);
         if (freegamesChannel === undefined) {
             const createdChannel = cGuild.channels.create({
                 name: "freegames",
