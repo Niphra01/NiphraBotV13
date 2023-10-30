@@ -16,7 +16,7 @@ module.exports = {
     const replies = new Replies;
 
     let row1 = buttons.row1(), row2 = buttons.row2(), row3 = buttons.row3();
-    let result = [
+    let board = [
       [],
       [],
       []
@@ -27,7 +27,7 @@ module.exports = {
     let player1 = await interaction.user;
 
     let tttEmbed = await Embed(player1, oppenent1);
-    const reply = await replies.firstReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+    const reply = await replies.firstReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
 
     const collector = reply.createMessageComponentCollector({ componentType: ComponentType.Button, time: 300000 });
 
@@ -51,84 +51,84 @@ module.exports = {
         case "button1":
           row1.components[0].setDisabled(true);
           row1.components[0].setLabel(symbol);
-          result[0][0] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[0][0] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button2":
           row1.components[1].setDisabled(true)
           row1.components[1].setLabel(symbol);
-          result[0][1] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[0][1] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button3":
           row1.components[2].setDisabled(true)
           row1.components[2].setLabel(symbol);
-          result[0][2] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[0][2] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button4":
           row2.components[0].setDisabled(true)
           row2.components[0].setLabel(symbol);
-          result[1][0] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[1][0] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button5":
           row2.components[1].setDisabled(true)
           row2.components[1].setLabel(symbol);
-          result[1][1] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[1][1] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button6":
           row2.components[2].setDisabled(true)
           row2.components[2].setLabel(symbol);
-          result[1][2] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[1][2] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button7":
           row3.components[0].setDisabled(true)
           row3.components[0].setLabel(symbol);
-          result[2][0] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[2][0] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button8":
           row3.components[1].setDisabled(true)
           row3.components[1].setLabel(symbol);
-          result[2][1] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[2][1] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
         case "button9":
           row3.components[2].setDisabled(true)
           row3.components[2].setLabel(symbol);
-          result[2][2] = symbol;
-          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(result), row1, row2, row3)
+          board[2][2] = symbol;
+          replies.normalReply(interaction, tttEmbed, await DrawTicTacToe(board), row1, row2, row3)
           break;
       }
 
       await 1500;
 
-      if ((result[0][0] === result[0][1] && result[0][0] === result[0][2] && result[0][0] != null ||
-        result[1][0] == result[1][1] && result[1][0] == result[1][2] && result[1][0] != null ||
-        result[2][0] == result[2][1] && result[2][0] == result[2][2] && result[2][0] != null ||
-        result[0][0] == result[1][0] && result[0][0] == result[2][0] && result[0][0] != null ||
-        result[0][1] == result[1][1] && result[0][1] == result[2][1] && result[0][1] != null ||
-        result[0][2] == result[1][2] && result[0][2] == result[2][2] && result[0][2] != null ||
-        result[0][0] == result[1][1] && result[0][0] == result[2][2] && result[0][0] != null ||
-        result[0][2] == result[1][1] && result[0][2] == result[2][0] && result[0][2] != null)
+      if ((board[0][0] === board[0][1] && board[0][0] === board[0][2] && board[0][0] != null ||
+        board[1][0] == board[1][1] && board[1][0] == board[1][2] && board[1][0] != null ||
+        board[2][0] == board[2][1] && board[2][0] == board[2][2] && board[2][0] != null ||
+        board[0][0] == board[1][0] && board[0][0] == board[2][0] && board[0][0] != null ||
+        board[0][1] == board[1][1] && board[0][1] == board[2][1] && board[0][1] != null ||
+        board[0][2] == board[1][2] && board[0][2] == board[2][2] && board[0][2] != null ||
+        board[0][0] == board[1][1] && board[0][0] == board[2][2] && board[0][0] != null ||
+        board[0][2] == board[1][1] && board[0][2] == board[2][0] && board[0][2] != null)
       ) {
         if (symbol == "X") {
-          replies.win(interaction, tttEmbed, player1, null, await DrawTicTacToe(result))
+          replies.win(interaction, tttEmbed, player1, null, await DrawTicTacToe(board))
         } else {
-          replies.win(interaction, tttEmbed, null, oppenent1, await DrawTicTacToe(result))
+          replies.win(interaction, tttEmbed, null, oppenent1, await DrawTicTacToe(board))
         }
 
         collector.stop("over");
       } else if (count == 9) {
-        replies.tie(interaction, tttEmbed, await DrawTicTacToe(result))
-        collector.stop("time");
+        replies.tie(interaction, tttEmbed, await DrawTicTacToe(board))
+        collector.stop("over");
       }
     });
     collector.on('end', (collected, reason) => {
-      result = [
+      board = [
         [],
         [],
         []
@@ -136,7 +136,7 @@ module.exports = {
       if (reason === "time") {
         return interaction.editReply("Game finished cause the timer dropped 0.")
       }
-      if(reason === 'over'){
+      else if(reason === 'over'){
       }
     });
   }
@@ -152,7 +152,7 @@ const Embed = (player1, oppenent1) => {
   return tttEmbed;
 }
 
-const DrawTicTacToe = async (result) => {
+const DrawTicTacToe = async (board) => {
   const canvas = Canvas.createCanvas(201, 215);
   const context = canvas.getContext("2d");
 
@@ -182,9 +182,9 @@ const DrawTicTacToe = async (result) => {
         squareSize,
         squareSize
       );
-      if (result[j][i] != undefined) {
+      if (board[j][i] != undefined) {
         context.fillText(
-          result[j][i],
+          board[j][i],
           squareSize / 2 + buffer + squareSize * i,
           rowOffset + 45
         );
