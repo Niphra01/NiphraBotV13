@@ -244,10 +244,12 @@ function checkLeftToRightDiagonal(board, result) {
     for (var y = 0; y < 4; y++) {
         for (var x = 3; x < 6; x++) {
             if (board[y][x] == 'Blue' && board[y + 1][x - 1] == 'Blue' && board[y + 2][x - 2] == 'Blue' && board[y + 3][x - 3] == 'Blue') {
+                console.log("Diagonal left 1")
                 result = "Blue";
                 return true,result;
             }
             if (board[y][x] == 'Red' && board[y + 1][x - 1] == 'Red' && board[y + 2][x - 2] == 'Red' && board[y + 3][x - 3] == 'Red') {
+                console.log("Diagonal left 2")
                 result = 'Red';
                 return true,result;
             }
@@ -259,10 +261,12 @@ function checkRightToLeftDiagonal(board, result) {
     for (var y = 6; y > 2; y--) {
         for (var x = 3; x < 6; x++) {
             if (board[y][x] == 'Blue' && board[y - 1][x - 1] == 'Blue' && board[y - 2][x - 2] == 'Blue' && board[y - 3][x - 3] == 'Blue') {
+                console.log("Diagonal right 1")
                 result = "Blue";
                 return true,result;
             }
             if (board[y][x] == 'Red' && board[y - 1][x - 1] == 'Red' && board[y - 2][x - 2] == 'Red' && board[y - 3][x - 3] == 'Red') {
+                console.log("Diagonal right 1")
                 result = 'Red';
                 return true,result;
             }
@@ -286,12 +290,18 @@ function checkHorizontalAndVertical(board, result) {
                     return true,result;
                 }
             }
-            else if (board[x][y] == 'Blue') {
+            else{
+                blueHorizontalConsecutive = 0;
+            }
+            if (board[x][y] == 'Blue') {
                 blueVerticalConsecutive++;
                 if (blueVerticalConsecutive == 4) {
                     result = "Blue";
                     return true,result;
                 }
+            }
+            else{
+                blueVerticalConsecutive=0;
             }
             if (board[y][x] == 'Red') {
                 redHorizontalConsecutive++;
@@ -299,12 +309,19 @@ function checkHorizontalAndVertical(board, result) {
                     result = 'Red';
                     return true,result;
                 }
-            } else if (board[x][y] == 'Red') {
+            }
+            else{
+                redHorizontalConsecutive=0;
+            }
+            if (board[x][y] == 'Red') {
                 redVerticalConsecutive++;
                 if (redVerticalConsecutive == 4) {
                     result = 'Red';
                     return true,result;
                 }
+            }
+            else{
+                redVerticalConsecutive=0;
             }
         }
     }

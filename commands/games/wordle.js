@@ -157,7 +157,6 @@ module.exports = {
       const collector = interaction.channel.createMessageCollector({
         filter,
         time: 300000,
-        errors: ["time"],
       });
       collector.on("collect", async (collected) => {
         let value = collected.content.toLowerCase();
@@ -320,7 +319,7 @@ module.exports = {
           collector.stop("over");
         }
       });
-      collector.on("end", async (collected, reason) => {
+      collector.on("end", async (reason) => {
         if (reason === "time") {
           const BlEmbed = Embed(interaction,lang,`$You didn't guess the word at time. The word was: ${randomWord}`);
 
