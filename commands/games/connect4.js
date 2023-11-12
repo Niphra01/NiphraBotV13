@@ -18,7 +18,7 @@ module.exports = {
         let board = [
             [], [], [], [], [], [], []
         ]
-        let count = 0, playerTurn = true, result="Nobody";
+        let count = 0, playerTurn = true;
         const buttons = new Buttons;
         const replies = new Replies;
         let row1 = buttons.row1(), row2 = buttons.row2();
@@ -86,16 +86,16 @@ module.exports = {
                     replies.normalReply(interaction, c4Embed, await DrawConnect4(board), row1, row2)
                     break;
             }
-            if (checkHorizontalAndVertical(board, result) || checkLeftToRightDiagonal(board, result) || checkRightToLeftDiagonal(board, result)) {
-                if(result == "Blue"){
-                    replies.win(interaction,c4Embed,player1,null, await DrawConnect4(board));
-                }
-                else{
-                    replies.win(interaction,c4Embed,null,oppenent1, await DrawConnect4(board));
-                }
+
+            if (checkHorizontalAndVertical(board) == "Blue" || checkLeftToRightDiagonal(board) == "Blue" || checkRightToLeftDiagonal(board) == "Blue") {
+                replies.win(interaction, c4Embed, player1, null, await DrawConnect4(board));
                 collector.stop('over')
-            }else if(count == 42){
-                replies.tie(interaction,c4Embed, await DrawConnect4(board));
+            } else if(checkHorizontalAndVertical(board) == "Red" || checkLeftToRightDiagonal(board) == "Red" || checkRightToLeftDiagonal(board) == "Red"){
+                replies.win(interaction,c4Embed,null,oppenent1, await DrawConnect4(board));
+                collector.stop('over')
+            }
+            else if (count == 42) {
+                replies.tie(interaction, c4Embed, await DrawConnect4(board));
                 collector.stop('over');
             }
         });
@@ -244,39 +244,30 @@ function checkLeftToRightDiagonal(board, result) {
     for (var y = 0; y < 4; y++) {
         for (var x = 3; x < 6; x++) {
             if (board[y][x] == 'Blue' && board[y + 1][x - 1] == 'Blue' && board[y + 2][x - 2] == 'Blue' && board[y + 3][x - 3] == 'Blue') {
-                console.log("Diagonal left 1")
-                result = "Blue";
-                return true,result;
+                return "Blue";
             }
             if (board[y][x] == 'Red' && board[y + 1][x - 1] == 'Red' && board[y + 2][x - 2] == 'Red' && board[y + 3][x - 3] == 'Red') {
-                console.log("Diagonal left 2")
-                result = 'Red';
-                return true,result;
+                return "Red";
             }
         }
     }
-    return false;
 }
 function checkRightToLeftDiagonal(board, result) {
     for (var y = 6; y > 2; y--) {
         for (var x = 3; x < 6; x++) {
             if (board[y][x] == 'Blue' && board[y - 1][x - 1] == 'Blue' && board[y - 2][x - 2] == 'Blue' && board[y - 3][x - 3] == 'Blue') {
-                console.log("Diagonal right 1")
-                result = "Blue";
-                return true,result;
+
+                return "Blue";
             }
             if (board[y][x] == 'Red' && board[y - 1][x - 1] == 'Red' && board[y - 2][x - 2] == 'Red' && board[y - 3][x - 3] == 'Red') {
-                console.log("Diagonal right 1")
-                result = 'Red';
-                return true,result;
+                return "Red";
             }
         }
     }
-    return false;
 }
 
 
-function checkHorizontalAndVertical(board, result) {
+function checkHorizontalAndVertical(board) {
     for (var x = 0; x < 6; x++) {
         var blueHorizontalConsecutive = 0;
         var redHorizontalConsecutive = 0;
@@ -286,44 +277,39 @@ function checkHorizontalAndVertical(board, result) {
             if (board[y][x] == 'Blue') {
                 blueHorizontalConsecutive++;
                 if (blueHorizontalConsecutive == 4) {
-                    result = "Blue";
-                    return true,result;
+                    return "Blue";
                 }
             }
-            else{
+            else {
                 blueHorizontalConsecutive = 0;
             }
             if (board[x][y] == 'Blue') {
                 blueVerticalConsecutive++;
                 if (blueVerticalConsecutive == 4) {
-                    result = "Blue";
-                    return true,result;
+                    return "Blue";
                 }
             }
-            else{
-                blueVerticalConsecutive=0;
+            else {
+                blueVerticalConsecutive = 0;
             }
             if (board[y][x] == 'Red') {
                 redHorizontalConsecutive++;
                 if (redHorizontalConsecutive == 4) {
-                    result = 'Red';
-                    return true,result;
+                    return "Red";
                 }
             }
-            else{
-                redHorizontalConsecutive=0;
+            else {
+                redHorizontalConsecutive = 0;
             }
             if (board[x][y] == 'Red') {
                 redVerticalConsecutive++;
                 if (redVerticalConsecutive == 4) {
-                    result = 'Red';
-                    return true,result;
+                    return "Red";
                 }
             }
-            else{
-                redVerticalConsecutive=0;
+            else {
+                redVerticalConsecutive = 0;
             }
         }
     }
-    return false;
 }
