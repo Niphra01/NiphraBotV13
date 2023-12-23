@@ -21,9 +21,9 @@ async function GetGames(client) {
             await gamesColl.deleteOne({ dataId: item.dataId });
         }
     });
-
-    await RedditFetch(client,fGamesResult,channelResult)
     await EpicGames(client,fGamesResult,channelResult)
+    await RedditFetch(client,fGamesResult,channelResult)
+    
 }
 module.exports = { GetGames };
 
@@ -36,13 +36,14 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
             "user-agent": process.env.USERAGENT,
         },
     };
-
     fetch(url, options)
         .then((res) => res.json())
         .then((data) =>
             data.data.Catalog.searchStore.elements.forEach(async(el) => {
+                
                 if (!fGamesResult.some((item) => item.dataId == el.id)) {
-                    if (el.price.lineOffers[0].appliedRules.length !== 0 && el.price.totalPrice.discountPrice == 0) {
+                    if(el.promotions.promotionalOffers.length !== 0){
+                    if (el.promotions.promotionalOffers[0].promotionalOffers[0].startDate < Date.now() !== 0 && el.price.totalPrice.discountPrice == 0) {
                         var gameImage
                         el.keyImages.forEach(item => {
                             if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
@@ -51,6 +52,7 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
                         })
                         var gameURL = el.productSlug != null ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
                             `https://store.epicgames.com/en-US/p/${el.catalogNs.mappings[0].pageSlug}`;
+
                         try {
                             const epicEmbed = new EmbedBuilder()
                                 .setTitle(el.title.toString())
@@ -59,7 +61,7 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
                                 .setURL(gameURL)
                                 .addFields([
                                     { name: 'Price', value: `Free` },
-                                    { name: 'Free Until', value: `${new Date(el.price.lineOffers[0].appliedRules[0].endDate).toLocaleDateString()}` }
+                                    { name: 'Free Until', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleString()}` }
                                 ])
                             await FreegamesChannel(epicEmbed, client,channelResult);
                         }
@@ -70,6 +72,7 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
                         await DatabaseAdd(el.id, el.title, gameURL);
 
                     }
+                }
                 }
             })
         );
@@ -106,7 +109,7 @@ const RedditFetch = async(client,fGamesResult,channelResult) =>{
                     ])
 
                 await FreegamesChannel(gameEmbed, client,channelResult);
-                await DatabaseAdd(posts[i].id, posts[i].title, posts[i].data.url);
+                await DatabaseAdd(posts[i].data.id, posts[i].data.title, posts[i].data.url);
             }
         }
     }
