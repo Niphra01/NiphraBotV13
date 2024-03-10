@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { EmbedBuilder, ChannelType, PermissionsBitField } = require("discord.js");
+const { EmbedBuilder, ChannelType, PermissionsBitField, time } = require("discord.js");
 const Mongo = require("./configs/DbConfig");
 const fetch = require("node-fetch");
 const { logger } = require("./logger");
@@ -21,14 +21,14 @@ async function GetGames(client) {
             await gamesColl.deleteOne({ dataId: item.dataId });
         }
     });
-    await EpicGames(client,fGamesResult,channelResult)
-    await RedditFetch(client,fGamesResult,channelResult)
-    
+    await EpicGames(client, fGamesResult, channelResult)
+    await RedditFetch(client, fGamesResult, channelResult)
+
 }
 module.exports = { GetGames };
 
 
-const EpicGames = async (client, fGamesResult,channelResult) => {
+const EpicGames = async (client, fGamesResult, channelResult) => {
     const url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=US&allowCountries=US,CN";
     const options = {
         method: "GET",
@@ -39,46 +39,45 @@ const EpicGames = async (client, fGamesResult,channelResult) => {
     fetch(url, options)
         .then((res) => res.json())
         .then((data) =>
-            data.data.Catalog.searchStore.elements.forEach(async(el) => {
-                
+            data.data.Catalog.searchStore.elements.forEach(async (el) => {
+
                 if (!fGamesResult.some((item) => item.dataId == el.id)) {
-                    if(el.promotions.promotionalOffers.length !== 0){
-                    if (el.promotions.promotionalOffers[0].promotionalOffers[0].startDate < Date.now() !== 0 && el.price.totalPrice.discountPrice == 0) {
-                        var gameImage
-                        el.keyImages.forEach(item => {
-                            if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
-                                gameImage = item.url
+                    if (el.promotions !== null && el.promotions.promotionalOffers.length !== 0) {
+                        if (el.promotions.promotionalOffers[0].promotionalOffers[0].startDate < Date.now() !== 0 && el.price.totalPrice.discountPrice == 0) {
+                            var gameImage
+                            el.keyImages.forEach(item => {
+                                if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
+                                    gameImage = item.url
+                                }
+                            })
+                            var gameURL = el.productSlug != null ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
+                                `https://store.epicgames.com/en-US/p/${el.catalogNs.mappings[0].pageSlug}`;
+
+                            try {
+                                const epicEmbed = new EmbedBuilder()
+                                    .setTitle(el.title.toString())
+                                    .setDescription(el.description.toString())
+                                    .setImage(gameImage)
+                                    .setURL(gameURL)
+                                    .addFields([
+                                        { name: 'Price', value: `Free` },
+                                        { name: 'Free Until', value: `${time(new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate), "f")}` }
+                                    ])
+                                await DatabaseAdd(el.id, el.title, gameURL);
+                                await FreegamesChannel(epicEmbed, client, channelResult);
+
                             }
-                        })
-                        var gameURL = el.productSlug != null ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
-                            `https://store.epicgames.com/en-US/p/${el.catalogNs.mappings[0].pageSlug}`;
-
-                        try {
-                            const epicEmbed = new EmbedBuilder()
-                                .setTitle(el.title.toString())
-                                .setDescription(el.description.toString())
-                                .setImage(gameImage)
-                                .setURL(gameURL)
-                                .addFields([
-                                    { name: 'Price', value: `Free` },
-                                    { name: 'Free Until', value: `${new Date(el.promotions.promotionalOffers[0].promotionalOffers[0].endDate).toLocaleString()}` }
-                                ])
-                            await FreegamesChannel(epicEmbed, client,channelResult);
+                            catch (err) {
+                                logger.error(`${err} --- ${el.title}`);
+                            }
                         }
-                        catch (err) { 
-                            logger.error(`${err} --- ${el.title}`);
-                        }
-
-                        await DatabaseAdd(el.id, el.title, gameURL);
-
                     }
-                }
                 }
             })
         );
 };
 
-const RedditFetch = async(client,fGamesResult,channelResult) =>{
+const RedditFetch = async (client, fGamesResult, channelResult) => {
     const conditions = [
         "gog.com",
         "store.ubi",
@@ -107,9 +106,9 @@ const RedditFetch = async(client,fGamesResult,channelResult) =>{
                     .addFields([
                         { name: 'Price', value: `Free` }
                     ])
-
-                await FreegamesChannel(gameEmbed, client,channelResult);
                 await DatabaseAdd(posts[i].data.id, posts[i].data.title, posts[i].data.url);
+                await FreegamesChannel(gameEmbed, client, channelResult);
+
             }
         }
     }
@@ -123,53 +122,29 @@ const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
             {
                 dataId: itemId,
                 dataName: itemTitle,
-                dataDate: date.toLocaleDateString(),
+                dataDate: date,
                 dataURL: itemURL,
             },
         ]);
         await Mongo.mongoClient.close();
-    } catch (err) { 
-        logger.error(`Something went wrong when adding Game Info to the collection.`,err);
+    } catch (err) {
+        logger.error(`Something went wrong when adding Game Info to the collection.`, err);
     }
 }
 
-const MongoChannelAdd = async (channelId) => {
-    try {
-        await Mongo.mongoClient.connect();
-        await channelColl.insertMany([
-            {
-                mChannelId: channelId,
-            }
-        ])
-        await Mongo.mongoClient.close();
-    } catch (err) { 
-        logger.error(`Something went wrong when adding channel to the collection.`,err)
-    }
-}
+const FreegamesChannel = async (embed, client, channelResult) => {
 
-const FreegamesChannel = async (embed, client,channelResult) => {
-    const guildsID = await client.guilds.fetch().then((guild) => guild.map((x) => x.id));
-    guildsID.forEach(async (guildID) => {
-        const cGuild = client.guilds.cache.get(guildID);
-        const freegamesChannel = await cGuild.channels
-            .fetch()
-            .then((channel) => channel.find((c) => channelResult.some((item) => item.mChannelId == c.id)));
-        if (freegamesChannel === undefined) {
-            const createdChannel = cGuild.channels.create({
-                name: "freegames",
-                type: ChannelType.GuildText,
-                permissionOverwrites: [
-                    {
-                        id: cGuild.id,
-                        allow: [PermissionsBitField.Flags.ViewChannel],
-                    },
-                ],
-            });
-            MongoChannelAdd(createdChannel.id);
+    channelResult.forEach(async (fGuild)=>{
+        const freeGamesGuild = await client.guilds.cache.get(fGuild.mGuildId);
+        const freeGamesChannel = await freeGamesGuild.channels.cache.get(fGuild.mChannelId)
+        try {
+            await freeGamesChannel.send({ embeds: [embed] });
         }
-        freegamesChannel.send({ embeds: [embed] })
-
+        catch (err) {
+            logger.error(`Channel is not available on database or there is an error[${err}]}.`);
+        }
     })
+
 }
 
 

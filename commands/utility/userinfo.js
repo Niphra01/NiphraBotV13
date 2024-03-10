@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder,time } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,8 +24,8 @@ module.exports = {
             value: `${member.nickname !== null ? `${member.nickname}` : "-"
               }`,
           },
-          { name: "Created at", value: `${user.createdAt.toLocaleString()}` },
-          { name: "Joined at", value: `${member.joinedAt.toLocaleString()}` },
+          { name: "Created at", value: `${time(user.createdAt,"f")}` },
+          { name: "Joined at", value: `${time(member.joinedAt,"f")}` },
           {
             name: "Roles",
             value: `${member.roles.cache

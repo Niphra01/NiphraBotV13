@@ -3,7 +3,7 @@ const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const { logger } = require("./src/logger");
-const { CLIENT_ID, GUILD_ID, TOKEN } = process.env;
+const { CLIENT_ID, TOKEN } = process.env;
 
 const commands = [];
 
