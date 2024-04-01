@@ -99,7 +99,7 @@ module.exports = {
                 collector.stop('over');
             }
         });
-        collector.on('end', (collected, reason) => {
+        collector.on('end', (reason) => {
             board = [
                 [], [], [], [], [], [], []
             ]
