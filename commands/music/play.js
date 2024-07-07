@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { useMainPlayer } = require('discord-player')
+const { useMainPlayer ,QueryType } = require('discord-player')
 const { playerOptions } = require('../../src/configs/playerConfigs');
 const { logger } = require('../../src/logger');
 module.exports = {
@@ -10,6 +10,7 @@ module.exports = {
             option.setName('query')
                 .setDescription("Type a query/url")
                 .setRequired(true)),
+                
     category: 'music',
     async execute(interaction) {
         const player = useMainPlayer();
@@ -19,7 +20,7 @@ module.exports = {
 
         await interaction.deferReply();
 
-        const searchResult = await player.search(query, { requestedBy: interaction.user });
+        const searchResult = await player.search(query, { requestedBy: interaction.user,searchEngine:QueryType.AUTO});
         if (!searchResult.hasTracks()) {
             await interaction.editReply({ content: `We found no tracks for ${query}`, ephemeral: true });
             return;
@@ -36,7 +37,7 @@ module.exports = {
             maxSize: playerOptions.maxQueueSize ?? 1000
 
         })
-        await interaction.followUp({ content: `**${searchResult.tracks[0].title}** has enqueued`, ephemeral: true })
+        
         try {
             if (!queue.connection) await queue.connect(channel);
         } catch (error) {
@@ -44,8 +45,9 @@ module.exports = {
             logger.error(error);
             return interaction.followUp({ content: `Something went wrong: ${error}`, ephemeral: true })
         }
-        await searchResult.playlist ? queue.addTrack(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
+        await queue.addTrack(searchResult.tracks);
 
+        await interaction.followUp({ content: `**${searchResult.tracks[0].title}** has enqueued`, ephemeral: true })
 
         if (!queue.isPlaying()) await queue.node.play();
 

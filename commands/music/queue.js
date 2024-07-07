@@ -21,18 +21,21 @@ module.exports = {
             .setThumbnail(interaction.guild.iconURL({ size: 2048, dynamic: true }))
             .setTitle(`Server Music List - ${interaction.guild.name} ${methods[queue.repeatMode]}`)
 
-        const tracks = queue.tracks.data.map((track, i) => {
-            `**${i + 1}** - ${track.title} | ${track.author} (Started by <@${track.requestedBy.id}>)`
-        })
+        //const t5 = queue.tracks.data.map((track) =>track.title);
+
+        const tracks = queue.tracks.data.map((track, i) => 
+             `**${i + 1}** - ${track.title} | (<@${track.requestedBy.id}>)`
+         )
+
+
         const songs = queue.tracks.size;
         const nextSongs = songs > 5
             ? `And **${songs - 5}** Other Song...`
             : `There are **${songs}** Songs in the List.`;
 
         embed.setDescription(
-            `Currently Playing: \`${queue.currentTrack.title}\`\n\n ${tracks
-                .slice(0, 5)
-                .join('\n')}\n\n ${nextSongs}`
+            `Currently Playing: \`${queue.currentTrack.title}\`\n\n 
+                ${tracks.slice(0, 5).join('\n')}\n\n ${nextSongs}`
         )
         embed.setTimestamp();
 
