@@ -11,11 +11,11 @@
   "author": "Niphra",
   "license": "ISC",
   "dependencies": {
-    "@discord-player/extractor": "^4.4.0",
+    "@discord-player/extractor": "^4.4.7",
     "@discordjs/opus": "^0.9.0",
     "@discordjs/rest": "^1.5.0",
     "canvas": "^2.11.2",
-    "discord-player": "^6.6.1",
+    "discord-player": "^6.6.10",
     "discord.js": "^14.13.0",
     "dotenv": "^16.0.3",
     "ffmpeg": "^0.0.4",
