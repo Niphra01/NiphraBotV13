@@ -45,8 +45,9 @@ module.exports = {
             logger.error(error);
             return interaction.followUp({ content: `Something went wrong: ${error}`, ephemeral: true })
         }
-        await queue.addTrack(searchResult.tracks);
 
+        await searchResult.playlist ? queue.addTrack(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
+        console.log(queue)
         await interaction.followUp({ content: `**${searchResult.tracks[0].title}** has enqueued`, ephemeral: true })
 
         if (!queue.isPlaying()) await queue.node.play();
