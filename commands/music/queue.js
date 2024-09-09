@@ -21,8 +21,6 @@ module.exports = {
             .setThumbnail(interaction.guild.iconURL({ size: 2048, dynamic: true }))
             .setTitle(`Server Music List - ${interaction.guild.name} ${methods[queue.repeatMode]}`)
 
-        //const t5 = queue.tracks.data.map((track) =>track.title);
-
         const tracks = queue.tracks.data.map((track, i) => 
              `**${i + 1}** - ${track.title} | (<@${track.requestedBy.id}>)`
          )

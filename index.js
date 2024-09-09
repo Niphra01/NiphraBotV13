@@ -4,8 +4,8 @@ const { TOKEN } = process.env;
 const fs = require("node:fs");
 const path = require("node:path");
 const { Player } = require('discord-player')
-const { YoutubeExtractor, SpotifyExtractor, SoundCloudExtractor } = require('@discord-player/extractor');
-const { logger } = require("./src/logger");
+const { SpotifyExtractor } = require('@discord-player/extractor');
+const { YoutubeiExtractor } = require("discord-player-youtubei")
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -17,10 +17,11 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
+
 const player = new Player(client)
-player.extractors.register(YoutubeExtractor, {});
+
+player.extractors.register(YoutubeiExtractor, {})
 player.extractors.register(SpotifyExtractor, {});
-//player.extractors.loadDefault();
 
 
 client.commands = new Collection();
@@ -36,7 +37,6 @@ for (const folder of commandFolders) {
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
-            logger.info(`The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 }

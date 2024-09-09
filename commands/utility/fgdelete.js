@@ -15,7 +15,6 @@ module.exports = {
             await interaction.reply({content:`Channel is deleted from Database. You'll not get Free Game post anymore on this channel.`,ephemeral:true})
             await Mongo.mongoClient.close();
         } catch (err) { 
-            logger.error(`Something went wrong when adding channel to the collection.`,err)
         }
     },
 };

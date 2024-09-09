@@ -2,18 +2,17 @@ require("dotenv").config();
 const { EmbedBuilder, ChannelType, PermissionsBitField, time } = require("discord.js");
 const Mongo = require("./configs/DbConfig");
 const fetch = require("node-fetch");
-const { logger } = require("./logger");
 const date = new Date();
 const gamesColl = Mongo.dbo.collection("FetchedGames");
 const channelColl = Mongo.dbo.collection("FreegamesChannel");
 
 async function GetGames(client) {
-    await Mongo.mongoClient.connect();
+   
 
     //finding all the data to array in FetchedGames collection from database
-    const fGamesResult = await gamesColl.find({}).toArray();
+    const fGamesResult = await callGames();
+    await Mongo.mongoClient.connect();
     const channelResult = await channelColl.find({}).toArray();
-
     //deleting a document if document has been in db more than 29 days
     await fGamesResult.forEach(async (item) => {
         var dt = new Date(item.dataDate);
@@ -21,14 +20,14 @@ async function GetGames(client) {
             await gamesColl.deleteOne({ dataId: item.dataId });
         }
     });
-    await EpicGames(client, fGamesResult, channelResult)
-    await RedditFetch(client, fGamesResult, channelResult)
+    await EpicGames(client,channelResult)
+    await RedditFetch(client,channelResult)
 
 }
 module.exports = { GetGames };
 
 
-const EpicGames = async (client, fGamesResult, channelResult) => {
+const EpicGames = async (client, channelResult) => {
     const url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=US&allowCountries=US,CN";
     const options = {
         method: "GET",
@@ -40,8 +39,8 @@ const EpicGames = async (client, fGamesResult, channelResult) => {
         .then((res) => res.json())
         .then((data) =>
             data.data.Catalog.searchStore.elements.forEach(async (el) => {
-
-                if (!fGamesResult.some((item) => item.dataId == el.id)) {
+                let gResult = await callGames();
+                if (!gResult.some((item) => item.dataId == el.id)) {
                     if (el.promotions !== null && el.promotions.promotionalOffers.length !== 0) {
                         if (el.promotions.promotionalOffers[0].promotionalOffers[0].startDate < Date.now() !== 0 && el.price.totalPrice.discountPrice == 0) {
                             var gameImage
@@ -68,7 +67,6 @@ const EpicGames = async (client, fGamesResult, channelResult) => {
 
                             }
                             catch (err) {
-                                logger.error(`${err} --- ${el.title}`);
                             }
                         }
                     }
@@ -77,7 +75,7 @@ const EpicGames = async (client, fGamesResult, channelResult) => {
         );
 };
 
-const RedditFetch = async (client, fGamesResult, channelResult) => {
+const RedditFetch = async (client, channelResult) => {
     const conditions = [
         "gog.com",
         "store.ubi",
@@ -98,7 +96,8 @@ const RedditFetch = async (client, fGamesResult, channelResult) => {
         //Checking if the data is already in the database
         if (dataFlair.some((el) => posts[i].data.link_flair_text?.includes(el) || true) && conditions.some((c) => posts[i].data.url.includes(c))) {
             //If the data is not in the database, adding it
-            if (!fGamesResult.some((item) => item.dataURL == posts[i].data.url)) {
+            let gResult = await callGames();
+            if (!gResult.some((item) => item.dataURL == posts[i].data.url)) {
                 const gameEmbed = new EmbedBuilder()
                     .setTitle(posts[i].data.title.toString())
                     .setImage(posts[i].data.thumbnail)
@@ -114,6 +113,11 @@ const RedditFetch = async (client, fGamesResult, channelResult) => {
     }
 }
 
+const callGames = async()=>{
+    await Mongo.mongoClient.connect();
+    const result = await gamesColl.find({}).toArray();
+    return result;
+}
 
 const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
     try {
@@ -128,7 +132,6 @@ const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
         ]);
         await Mongo.mongoClient.close();
     } catch (err) {
-        logger.error(`Something went wrong when adding Game Info to the collection.`, err);
     }
 }
 
@@ -141,7 +144,6 @@ const FreegamesChannel = async (embed, client, channelResult) => {
             await freeGamesChannel.send({ embeds: [embed] });
         }
         catch (err) {
-            logger.error(`Channel is not available on database or there is an error[${err}]}.`);
         }
     })
 

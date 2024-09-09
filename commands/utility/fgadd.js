@@ -22,7 +22,6 @@ module.exports = {
             await  Mongo.mongoClient.close();
         } catch (err) { 
             interaction.reply({content:'Channel is already in database.',ephemeral:true})
-            logger.error(`Something went wrong when adding channel to the collection.`,err)
         }
     },
 };

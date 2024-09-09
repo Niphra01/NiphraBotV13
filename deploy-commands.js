@@ -2,7 +2,6 @@ require("dotenv").config();
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const { logger } = require("./src/logger");
 const { CLIENT_ID, TOKEN } = process.env;
 
 const commands = [];
@@ -21,7 +20,7 @@ for (const folder of commandFolders) {
         if ('data' in command && 'execute' in command) {
             commands.push(command.data.toJSON());
         } else {
-            logger.error(`The command at ${filePath} is missing a required "data" or "execute" property.`);
+            console.log(`The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 }
@@ -36,9 +35,6 @@ const rest = new REST().setToken(TOKEN);
             { body: commands },
         );
         console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-        logger.info(`Successfully reloaded ${data.length} application (/) commands.`);
     } catch (error) {
-
-        logger.error(error);
     }
 })();

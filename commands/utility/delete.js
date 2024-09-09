@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { logger } = require('../../src/logger');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,11 +28,9 @@ module.exports = {
       .bulkDelete(deleteCount + 1)
       .then(async () => {
         await interaction.channel.send({ content: `**${value}** message deleted by => ${interaction.user}` });
-        logger.info(`**${value}** message deleted by => ${interaction.user}`);
       })
       .catch(async (error) => {
         await interaction.channel.send({ content: `Couldn't delete messages because of: **${error}**` });
-        logger.error(`Couldn't delete messages because of: **${error}**`);
       });
   },
 };
