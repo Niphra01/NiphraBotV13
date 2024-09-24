@@ -6,12 +6,14 @@ const date = new Date();
 const gamesColl = Mongo.dbo.collection("FetchedGames");
 const channelColl = Mongo.dbo.collection("FreegamesChannel");
 
-async function GetGames(client) {
-   
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    //finding all the data to array in FetchedGames collection from database
-    const fGamesResult = await callGames();
+async function GetGames(client) {
     await Mongo.mongoClient.connect();
+    //finding all the data to array in FetchedGames collection from database
+    var fGamesResult = await callGames();
     const channelResult = await channelColl.find({}).toArray();
     //deleting a document if document has been in db more than 29 days
     await fGamesResult.forEach(async (item) => {
@@ -20,14 +22,15 @@ async function GetGames(client) {
             await gamesColl.deleteOne({ dataId: item.dataId });
         }
     });
-    await EpicGames(client,channelResult)
-    await RedditFetch(client,channelResult)
-
+    await EpicGames(client,channelResult,fGamesResult)
+    await RedditFetch(client,channelResult,fGamesResult)
+    await timeout(60000)
+    await Mongo.mongoClient.close();
 }
 module.exports = { GetGames };
 
 
-const EpicGames = async (client, channelResult) => {
+const EpicGames = async (client, channelResult,fGamesResult) => {
     const url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=US&allowCountries=US,CN";
     const options = {
         method: "GET",
@@ -39,19 +42,17 @@ const EpicGames = async (client, channelResult) => {
         .then((res) => res.json())
         .then((data) =>
             data.data.Catalog.searchStore.elements.forEach(async (el) => {
-                let gResult = await callGames();
-                if (!gResult.some((item) => item.dataId == el.id)) {
+                if (!fGamesResult.some((item) => item.dataId == el.id)) {
                     if (el.promotions !== null && el.promotions.promotionalOffers.length !== 0) {
                         if (el.promotions.promotionalOffers[0].promotionalOffers[0].startDate < Date.now() !== 0 && el.price.totalPrice.discountPrice == 0) {
                             var gameImage
                             el.keyImages.forEach(item => {
                                 if (item.type === 'Thumbnail' || item.type === "DieselStoreFrontWide") {
-                                    gameImage = item.url
+                                    gameImage = item.url.replace(" ","%20")
                                 }
                             })
                             var gameURL = el.productSlug != null ? `https://store.epicgames.com/en-US/p/${el.productSlug}` :
                                 `https://store.epicgames.com/en-US/p/${el.catalogNs.mappings[0].pageSlug}`;
-
                             try {
                                 const epicEmbed = new EmbedBuilder()
                                     .setTitle(el.title.toString())
@@ -75,7 +76,7 @@ const EpicGames = async (client, channelResult) => {
         );
 };
 
-const RedditFetch = async (client, channelResult) => {
+const RedditFetch = async (client, channelResult,fGamesResult) => {
     const conditions = [
         "gog.com",
         "store.ubi",
@@ -96,8 +97,7 @@ const RedditFetch = async (client, channelResult) => {
         //Checking if the data is already in the database
         if (dataFlair.some((el) => posts[i].data.link_flair_text?.includes(el) || true) && conditions.some((c) => posts[i].data.url.includes(c))) {
             //If the data is not in the database, adding it
-            let gResult = await callGames();
-            if (!gResult.some((item) => item.dataURL == posts[i].data.url)) {
+            if (!fGamesResult.some((item) => item.dataURL == posts[i].data.url)) {
                 const gameEmbed = new EmbedBuilder()
                     .setTitle(posts[i].data.title.toString())
                     .setImage(posts[i].data.thumbnail)
@@ -113,15 +113,14 @@ const RedditFetch = async (client, channelResult) => {
     }
 }
 
-const callGames = async()=>{
-    await Mongo.mongoClient.connect();
-    const result = await gamesColl.find({}).toArray();
+async function callGames(){
+    
+    let result = await gamesColl.find({}).toArray();
     return result;
 }
 
 const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
     try {
-        await Mongo.mongoClient.connect();
         await gamesColl.insertMany([
             {
                 dataId: itemId,
@@ -130,14 +129,16 @@ const DatabaseAdd = async (itemId, itemTitle, itemURL) => {
                 dataURL: itemURL,
             },
         ]);
-        await Mongo.mongoClient.close();
+        fGamesResult = await callGames();
     } catch (err) {
     }
+    
 }
 
-const FreegamesChannel = async (embed, client, channelResult) => {
 
+const FreegamesChannel = async (embed, client, channelResult) => {
     channelResult.forEach(async (fGuild)=>{
+        
         const freeGamesGuild = await client.guilds.cache.get(fGuild.mGuildId);
         const freeGamesChannel = await freeGamesGuild.channels.cache.get(fGuild.mChannelId)
         try {
